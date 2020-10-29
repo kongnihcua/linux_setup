@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Linux Setup</title>
+    <meta content="">
+    <style></style>
+  </head>
+<body>
+
+<h2>Setup PostgresSQL</h2>
+Environment: Ubuntu Focal
+<h3>install dependencies</h3>
+<ul>
+  <li><code>sudo apt install bison flex zlib1g-dev libreadline-dev</code></li>
+</ul>
+<h3>compile and installation on local folder</h3>
+<ul>
+  <li><code>cd ~/workspace</code></li>
+  <li><code>git clone https://github.com/postgres/postgres</code></li>
+  <li><code>cd postgres</code></li>
+  <li><code>git checkout REL_13_0</code></li>
+  <li><code>./configure --prefix=/home/andyau/workspace/postgres/build</code></li>
+  <li><code>make</code></li>
+  <li><code>make install</code></li>
+</ul>
+
+<h3>setup Environmetal Variable for readability</h3>
+<code>export PG=$HOME/workspace/postgres/build && export LD_LIBRARY_PATH=$PG/lib</code>
+
+<h3>initialize a new Database folder</h3>
+<code>$PG/bin/initdb -D YOUR_PROJECT_DIRECTORY/data</code>
+
+<h3>start Postgres Server instance</h3>
+<code>$PG/bin/postgres -D YOUR_PROJECT_DIRECTORY/data</code>
+
+<p>now things should be running.</p>
+
+
+<h2>Use PostgresSQL</h2>
+<code>$PG/bin/psql</code>
+
+</body>
+</html>
