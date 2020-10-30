@@ -23,10 +23,11 @@ Environment: Ubuntu Focal
   <li><code>make install</code></li>
 </ul>
 
-<h3>setup Environmetal Variable for readability</h3>
+<h3>setup Environmetal Variable for better readability</h3>
 <code>export PG=$HOME/workspace/postgres/build && export LD_LIBRARY_PATH=$PG/lib</code>
 
-<h3>initialize a new Database folder</h3>
+<h3>initialize a new Database Cluster in target folder</h3>
+<p>note: this only initialize the directory file system for postgres to work.</p>
 <code>$PG/bin/initdb -D YOUR_PROJECT_DIRECTORY/data</code>
 
 <h3>start Postgres Server instance</h3>
@@ -36,7 +37,7 @@ Environment: Ubuntu Focal
 
 
 <h2>Use PostgresSQL</h2>
-<code>$PG/bin/psql</code>
+<code>$PG/bin/psql DB_NAME</code>
 
 </body>
 </html>
