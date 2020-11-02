@@ -24,20 +24,47 @@ Environment: Ubuntu Focal
 </ul>
 
 <h3>setup Environmetal Variable for better readability</h3>
-<code>export PG=$HOME/workspace/postgres/build && export LD_LIBRARY_PATH=$PG/lib</code>
+<code>export PG=$HOME/workspace/postgres/build/bin && export LD_LIBRARY_PATH=$HOME/workspace/postgres/build/lib</code>
 
 <h3>initialize a new Database Cluster in target folder</h3>
 <p>note: this only initialize the directory file system for postgres to work.</p>
-<code>$PG/bin/initdb -D YOUR_PROJECT_DIRECTORY/data</code>
+<code>$PG/initdb -D YOUR_PROJECT_DIRECTORY/data</code>
 
 <h3>start Postgres Server instance</h3>
-<code>$PG/bin/postgres -D YOUR_PROJECT_DIRECTORY/data</code>
+<code>$PG/postgres -D YOUR_PROJECT_DIRECTORY/data</code>
 
 <p>now things should be running.</p>
 
 
-<h2>Use PostgresSQL</h2>
-<code>$PG/bin/psql DB_NAME</code>
+<h2>Access Client Shell of PostgresSQL</h2>
+<code>$PG/psql DB_NAME</code>
+
+<h2>Setup PostGIS</h2>
+<h3>install dependencies</h3>
+<li><code>sudo apt install autoconf libtool libxml2-dev libgeos-dev libproj-dev libgdal-dev</code></li>
+<p>where GEOS is a library for performing operations on two-dimensional vector geometries.</p>
+
+<h3>compile and installation on local folder</h3>
+<ul>
+  <li><code>cd ~/workspace</code></li>
+  <li><code>git clone https://git.osgeo.org/gitea/postgis/postgis.git</code></li>
+  <li><code>cd postgis</code></li>
+  <li><code>git checkout 3.1.0alpha2</code></li>
+  <li><code>./autogen.sh</code></li>
+  <li><code>./configure --with-pgconfig=$PG/pg_config</code></li>
+  <li><code>make</code></li>
+  <li><code>make install</code></li>
+</ul>
+<details>
+    <summary>the library files and executables will be installed to Postgres library:</summary>
+    <pre>
+        For your info, using the values determined from 
+        /home/andyau/workspace/postgres/build/bin/pg_config we will be installing:   
+          * postgis shared library in /home/andyau/workspace/postgres/build/lib 
+          * postgis SQL files in /home/andyau/workspace/postgres/build/share/contrib/postgis-3.1 
+          * postgis executables in /home/andyau/workspace/postgres/build/bin
+    </pre>
+</details>
 
 </body>
 </html>
