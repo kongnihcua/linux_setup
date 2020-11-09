@@ -1,0 +1,1 @@
+https://htmlpreview.github.io/?https://github.com/kongnihcua/linux_setup/blob/master/index.html
