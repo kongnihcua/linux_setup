@@ -61,8 +61,12 @@
 <h2>Access Windows Network Drive</h2>
 <p>install requirement:</p>
 <code>sudo apt install cifs-utils</code>
-<br>
+<p>mount network drive directory:</p>
 <code>sudo mount -t cifs -o username=USERNAME,uid=$(id -u) //DRIVE_IP/team/ /mnt/FILESYSTEM</code>
+
+<h3>Setup Git</h3>
+<p>store your credentials for push/pull without authentication:</p>
+<code>git config credential.helper store</code>
 
 <h2>Setup PostgresSQL</h2>
 Environment: Ubuntu Focal
