@@ -134,22 +134,81 @@ Environment: Ubuntu Focal
 <h3>Flash OS onto a microSD card</h3>
 <p>Obtain Image:</p>
 <code>wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img.gz</code>
-<p>Plug in SD card, identify the partition in df, in our case /dev/mmcblk0. If it is also auto mounted, as shown in sudo fdisk -l, run e.g.:</p>
+<p>Take the optional step to inspect the checksum:</p>
+<code>sha256sum openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img.gz</code>
+<p>Decompress Image:</p>
+<code>gzip --decompress openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img.gz</code>
+<p>Plug in SD card, identify the partition in <code>df</code>, in our case <code>/dev/mmcblk0</code>. If it is also auto mounted, as shown in <code>sudo fdisk -l</code>, run e.g.:</p>
 <code>sudo umount /media/auchingnok/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
 <p>Format the card:</p>
 <code>sudo mkfs.ext4 /dev/mmcblk0</code>
 <p>Flash image:</p>
 <code>sudo dd if=./openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
-<p>Plugin the SD to Raspberry 4 and boot</p>
+<p>Plugin the SD to Raspberry 4 and boot. Wait for a while for the boot phase, press <kbd>Enter</kbd> to access the command line interface.</p>
+
+<h3>Change the password</h3>
+<p>for better security, remember to change the password of root first</p>
+<code>passwd</code>
+
+<h3>Setup Network Interface</h3>
+<p>Chang the default static ip address of ethernet card</p>
+<code>vim /etc/config/network</code>
+<p>under section <code>config interface 'lan'</code>, the concerning line be <code>option ipaddr '192.168.0.10'
+</code>. make sure the ip address is in the same subnet of your local network.</p>
+<p>Here is an sample setting file:</p>
+<pre>
+config interface 'loopback'
+    option ifname 'lo'
+    option proto 'static'
+    option ipaddr '127.0.0.1'
+    option netmask '255.0.0.0'
+
+config globals 'globals'
+    option ula_prefix 'fd50:aa02:b3ad::/48'
+
+config interface 'lan'
+    option type 'bridge'
+    option ifname 'eth0'
+    option proto 'static'
+    option ipaddr '192.168.0.10'
+    option netmask '255.255.255.0'
+    option ip6assign '60'
+    option gateway '192.168.0.1'
+    option dns '192.168.0.1'
+</pre>
+<p>then restart the network service:</p>
+<code>/etc/init.d/network restart</code>
+<p>to check the local network setting is functioning, try to ssh the system from another machine:</p>
+<code>ssh root@192.168.0.10</code>
+<p>to check the gateway and dns to public network setting is functioning, try to ping a public network address:</p>
+<code>ping google.com</code>
 
 <h3>Setup Wifi</h3>
 <p>Check status of devices:</p>
 <code>ip a</code>
+<p>or</p>
 <code>cat /proc/net/dev</code>
 <p>Check wifi status:</p>
 <code>wifi status</code>
 <p>Edit wifi config:</p>
 <code>vim /etc/config/wireless</code>
+<pre>
+config wifi-device 'radio0'
+    option type 'mac80211'
+    option channel '7'
+    option hwmode '11g'
+    option path 'platform/soc/fe300000.mmcnr/mmc_host/mmc1/mmc1:0001/mmc1:0001:1'
+    option country 'IE'
+
+config wifi-iface 'default_radio0'
+    option device 'radio0'
+    option network 'lan'
+    option mode 'ap'
+    option ssid 'TP-LINK_WRT2'
+    option encryption 'psk2'
+    option key 'secret'
+</pre>
+<p>Remember to change the string <code>'secret'</code> to a stronger password</p>
 <p>Reload network:</p>
 <code>service network reload</code>
 <p>To check if an Access Point is created and put on air:</p>
@@ -158,6 +217,23 @@ Environment: Ubuntu Focal
 <code>dmesg</code>
 <p>To check the debug log:</p>
 <code>logread</code>
+
+<h3>Setup nftables</h3>
+<p>according to <a href="https://openwrt.org/docs/guide-user/firewall/misc/nftables">documentation of openWRT</a>, we disable the loading of iptable NAT functionalities:</p>
+<code>rm /etc/modules.d/ipt-nat</code>
+<p>this file holds the following content:</p>
+<pre>
+iptable_nat
+xt_MASQUERADE
+xt_REDIRECT
+xt_nat
+</pre>
+<p>install nftables</p>
+<code>opkg update</code><br/>
+<code>opkg install nftables</code>
+
+<h3>Notes on Packages</h3>
+<p>The opkg package repository for Raspberry Pi 4B is a development branch, which updates frequently and not yet has a stable release. In case of a dependency mismatch, either build everything from source or you need to reflash the microSD with the latest snapshot.</p>
 
 </div>
 </body>
