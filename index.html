@@ -50,8 +50,8 @@
 <p>keyboard shortcuts can be set at Global Keyboard Shortcuts</p>
 <table>
     <tr><th>Shortcut</th><th>Action</th></tr>
-    <tr><td>META + E</td><td>Dolphin</td></tr>
-    <tr><td>CTRL + ALT + T</td><td>Konsole</td></tr>
+    <tr><td><kbd>META</kbd> + <kbd>E</kbd></td><td>Dolphin</td></tr>
+    <tr><td><kbd>CTRL</kbd> + <kbd>ALT</kbd> + <kbd>T</kbd></td><td>Konsole</td></tr>
 </table>
 
 <h2>Setup ~/workspace</h2>
@@ -130,7 +130,35 @@ Environment: Ubuntu Focal
 </details>
 
 
-</div>
+<h2>Setup OpenWRT on Raspberry Pi 4B</h2>
+<h3>Flash OS onto a microSD card</h3>
+<p>Obtain Image:</p>
+<code>wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img.gz</code>
+<p>Plug in SD card, identify the partition in df, in our case /dev/mmcblk0. If it is also auto mounted, as shown in sudo fdisk -l, run e.g.:</p>
+<code>sudo umount /media/auchingnok/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
+<p>Format the card:</p>
+<code>sudo mkfs.ext4 /dev/mmcblk0</code>
+<p>Flash image:</p>
+<code>sudo dd if=./openwrt-bcm27xx-bcm2711-rpi-4-ext4-factory.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
+<p>Plugin the SD to Raspberry 4 and boot</p>
 
+<h3>Setup Wifi</h3>
+<p>Check status of devices:</p>
+<code>ip a</code>
+<code>cat /proc/net/dev</code>
+<p>Check wifi status:</p>
+<code>wifi status</code>
+<p>Edit wifi config:</p>
+<code>vim /etc/config/wireless</code>
+<p>Reload network:</p>
+<code>service network reload</code>
+<p>To check if an Access Point is created and put on air:</p>
+<code>iw dev</code>
+<p>To check debug messages:</p>
+<code>dmesg</code>
+<p>To check the debug log:</p>
+<code>logread</code>
+
+</div>
 </body>
 </html>
