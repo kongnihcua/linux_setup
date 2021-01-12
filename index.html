@@ -235,6 +235,31 @@ xt_nat
 <h3>Notes on Packages</h3>
 <p>The opkg package repository for Raspberry Pi 4B is a development branch, which updates frequently and not yet has a stable release. In case of a dependency mismatch, either build everything from source or you need to reflash the microSD with the latest snapshot.</p>
 
+
+<h2>GitLab Continuous Integration</h2>
+<p>This will setup a Build Server to run the tests. A daemon called "runner" listens to the GitLab server and calls executors when notified of changes.</p>
+<p>Download gitlab-runner:</p>
+<code>wget https://gitlab-runner-downloads.s3.amazonaws.com/latest/deb/gitlab-runner_amd64.deb</code>
+<br/>
+<p>Setup gitlab-runner</p>
+<code>sudo dpkg -i gitlab-runner_amd64.deb</code>
+<p>A Specific Runner will be set up to execute the pipeline. The runner will run locally in the Build Server and receives notifications from GitLab/SCM server. For that an authentication token need to be first obtained from GitLab. Go to the GitLab project page, you will find the token under "Settings", "CI/CD", "Runners", "Specific Runners", "Set up a specific Runner manually", "registration token".</p>
+<p>Register an Executor:</p>
+<pre><code>
+sudo gitlab-runner register \
+  --non-interactive \
+  --url "https://gitlab.fraunhofer.de" \
+  --registration-token "PROJECT_REGISTRATION_TOKEN" \
+  --executor "shell" \
+  --description "robovaas-executor" \
+  --run-untagged="true" \
+  --locked="false" \
+  --access-level="not_protected"
+</code></pre>
+<p>Grant gitlab-runner root access right:</p>
+<code>sudo usermod -a -G sudo gitlab-runner</code>
+<p>then follow previous instructions to allow gitlab-runner to sudo without password prompt</p>
+
 </div>
 </body>
 </html>
