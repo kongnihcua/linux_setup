@@ -1,18 +1,54 @@
 <html>
-  <head>
+<head>
     <title>Linux Setup</title>
-    <meta content="">
+    <meta content="" charset="UTF-8">
     <style>
-      h2 {margin-top: 100pt; margin-bottom: 5pt;}
-      h3 {margin-top: 20pt; margin-bottom: 5pt;}
-      p {margin-top: 10pt; margin-bottom: 10pt;}
-      code {color:blue;}
-      pre {color: green;}
+        h2 {margin-top: 100pt; margin-bottom: 5pt;}
+        h3 {margin-top: 20pt; margin-bottom: 5pt;}
+        p {margin-top: 10pt; margin-bottom: 10pt;}
+        code {color:blue;}
+        pre {color: green;}
+        #navbar {
+            top: 10vh;
+            position: fixed;
+            left: 3vw;
+            width: 24vw;
+        }
+        #navbar a {
+            line-height: 1.6;
+        }
+        #content {
+            margin-left: 30vw;
+            margin-right: 30vw;
+        }
     </style>
-  </head>
-<body>
+</head>
 
-<div style="margin-left: 30vw; margin-right: 30vw;">
+<script>
+const load = _ => {
+    console.log('loading navbar...')
+    let headers_2 = [...document.getElementsByTagName('h2')]
+    let navbar = document.getElementById('navbar')
+    headers_2.map( x => {
+        // add id attribute
+        x.setAttribute('id',x.innerHTML.replace(' ','_'))
+        // create link
+        let a = document.createElement('a')
+        a.setAttribute('href','#' + x.getAttribute('id'))
+        a.innerHTML = x.innerHTML
+        // add link to navbar
+        navbar.appendChild(a)
+        // add line break
+        navbar.appendChild(document.createElement('br'))
+    })
+}
+</script>
+
+<body onload='load()'>
+
+<div id='navbar'></div>
+
+<div id='content'>
 
 <h2>System Settings</h2>
 <h3>Thunderbolt Authorization</h3>
@@ -231,6 +267,8 @@ xt_nat
 <p>install nftables</p>
 <code>opkg update</code><br/>
 <code>opkg install nftables</code>
+<p>load kernel module required for Netwokr Address Translation:</p>
+<code>opkg install kmod-nft-nat</code>
 
 <h3>Notes on Packages</h3>
 <p>The opkg package repository for Raspberry Pi 4B is a development branch, which updates frequently and not yet has a stable release. In case of a dependency mismatch, either build everything from source or you need to reflash the microSD with the latest snapshot.</p>
@@ -259,6 +297,15 @@ sudo gitlab-runner register \
 <p>Grant gitlab-runner root access right:</p>
 <code>sudo usermod -a -G sudo gitlab-runner</code>
 <p>then follow previous instructions to allow gitlab-runner to sudo without password prompt</p>
+
+
+<h2>Network Tests</h2>
+<h3>Send and Receive UDP</h3>
+<p>To listen to a udp port:</p>
+<code>sudo tcpdump -i eno1 port 9000 -X</code>
+<p>replace <code>eno1</code> with your target network interface.</p>
+<p>To send some text messages to a port:</p>
+<code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
 
 </div>
 </body>
