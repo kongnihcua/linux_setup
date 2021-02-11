@@ -331,6 +331,9 @@ sudo gitlab-runner register \
 <code>raspivid -n -w 1920 -h 1080 -b 4500000 -fps 30 -vf -hf -t 0 -o - | gst-launch-1.0 -v fdsrc !  h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.0.80 port=5600</code>
 <h3>Server: View Video on Server</h3>
 <code>gst-launch-1.0 -v udpsrc uri=udp://192.168.0.80:5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! xvimagesink sync=false</code>
+
+
+
 </div>
 </body>
 </html>
