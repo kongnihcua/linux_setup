@@ -307,6 +307,30 @@ sudo gitlab-runner register \
 <p>To send some text messages to a port:</p>
 <code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
 
+
+
+<h2>Janus Gateway</h2>
+<h3>Send and Receive UDP</h3>
+<p>To listen to a udp port:</p>
+<code>sudo tcpdump -i eno1 port 9000 -X</code>
+<p>replace <code>eno1</code> with your target network interface.</p>
+<p>To send some text messages to a port:</p>
+<code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
+
+
+<h2>Setup Streaming on Raspbian</h2>
+<h3>Enable SSH and Camera</h3>
+<code>sudo raspi-config</code>
+<h3>Install Gstreamer</h3>
+<code>sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly</code>
+<h3>Enable v4l2 kernel module every time after system start:</h3>
+<code>sudo modprobe bcm2835-v4l2</code>
+<h3>Client: Fetch Video and Push to UDP port of Server</h3>
+<code>gst-launch-1.0 v4l2src device=/dev/video0  ! videoconvert ! x264enc tune=zerolatency ! video/x-h264, profile=baseline ! rtph264pay ! udpsink host=192.168.0.80 port=5600</code>
+<h3>Raspivid hardward H264 Streaming</h3>
+<code>raspivid -n -w 1920 -h 1080 -b 4500000 -fps 30 -vf -hf -t 0 -o - | gst-launch-1.0 -v fdsrc !  h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.0.80 port=5600</code>
+<h3>Server: View Video on Server</h3>
+<code>gst-launch-1.0 -v udpsrc uri=udp://192.168.0.80:5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! xvimagesink sync=false</code>
 </div>
 </body>
 </html>
