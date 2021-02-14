@@ -333,6 +333,11 @@ sudo gitlab-runner register \
 <code>gst-launch-1.0 -v udpsrc uri=udp://192.168.0.80:5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! xvimagesink sync=false</code>
 
 
+<h2>Upgrade NodeJS</h2>
+<h3>Install n</h3>
+<code>sudo npm install -g n latest</code>
+<br>
+<code>sudo n latest</code>
 
 </div>
 </body>
