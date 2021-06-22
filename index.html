@@ -308,6 +308,11 @@ sudo gitlab-runner register \
 <code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
 
 
+<h2>Networking</h2>
+<h3>Hostname Discovery</h3>
+<p>Discover other Hostnames on the same network</p>
+<code>nmap -sn 192.168.0.*</code>
+
 
 <h2>Janus Gateway</h2>
 <h3>Send and Receive UDP</h3>
@@ -317,6 +322,18 @@ sudo gitlab-runner register \
 <p>To send some text messages to a port:</p>
 <code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
 
+<h3>Instll Janus Server</h3>
+<code>sudo apt install janus</code>
+<h3>Stop Janus Daemon</h3>
+<code>sudo service janus stop</code>
+<h3>Kill all local Janus instances</h3>
+<code>sudo killall janus</code>
+<h3>Enable Websocket Plugin, RestAPI Plugin, Video Room Plugin</h3>
+<code>sudo cp janus.transport.websockets.jcfg.sample janus.transport.websockets.jcfg</code><br>
+<code>sudo cp janus.transport.http.jcfg.sample janus.transport.http.jcfg</code><br>
+<code>sudo cp janus.plugin.videoroom.jcfg.sample janus.plugin.videoroom.jcfg</code><br>
+<h3>Start Janus Server</h3>
+<code>sudo janus</code>
 
 <h2>Setup Streaming on Raspbian</h2>
 <h3>Enable SSH and Camera</h3>
@@ -338,6 +355,13 @@ sudo gitlab-runner register \
 <code>sudo npm install -g n latest</code>
 <br>
 <code>sudo n latest</code>
+
+
+<h2>Build a Qt Project</h2>
+<h3>Install Dependencies</h3>
+<code>sudo apt install qt5-default</code>
+<h3>Install Qt Developement Libraries</h3>
+<code>sudo apt-get install libqt5*dev</code>
 
 </div>
 </body>
