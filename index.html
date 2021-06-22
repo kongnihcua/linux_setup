@@ -349,12 +349,15 @@ sudo gitlab-runner register \
 <h3>Server: View Video on Server</h3>
 <code>gst-launch-1.0 -v udpsrc uri=udp://192.168.0.80:5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! xvimagesink sync=false</code>
 
-
-<h2>Upgrade NodeJS</h2>
-<h3>Install n</h3>
+<h2>Node and NPM</h2>
+<h3>Upgrade NodeJS</h3>
+<p>Install n</p>
 <code>sudo npm install -g n latest</code>
 <br>
 <code>sudo n latest</code>
+<h3>Troubleshooting error during NPM install</h3>
+<p>Check Available Versions of a package</p>
+<code>npm view package_name</code>
 
 
 <h2>Build a Qt Project</h2>
