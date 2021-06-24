@@ -322,7 +322,7 @@ sudo gitlab-runner register \
 <p>To send some text messages to a port:</p>
 <code>echo "testing" > /dev/udp/192.168.0.102/9000</code>
 
-<h3>Instll Janus Server</h3>
+<h3>Install Janus Server</h3>
 <code>sudo apt install janus</code>
 <h3>Stop Janus Daemon</h3>
 <code>sudo service janus stop</code>
@@ -334,6 +334,38 @@ sudo gitlab-runner register \
 <code>sudo cp janus.plugin.videoroom.jcfg.sample janus.plugin.videoroom.jcfg</code><br>
 <h3>Start Janus Server</h3>
 <code>sudo janus</code>
+
+
+<h2>Programming in C</h2>
+<p>To install the source files (.h and .c files) of a library using <code>apt</code>, usually the package name is prefixed with <code>lib</code> and suffixed with <code>-dev</code>. For example, the library foo has the <code>apt</code> package name <code>libfoo-dev</code> </p>
+<p>Download source file using <code>apt</code>:</p>
+<code>sudo apt install libfoo-dev</code>
+<p>To check if a Library is installed, inspect pkg-config for .pc entries:</p>
+<code>pkg-config --list-all | grep foo</code>
+<p>To check the directory where the installed header files and object files can be found:</p>
+<code>PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 PKG_CONFIG_ALLOW_SYSTEM_LIBS=1 pkg-config libfoo --cflags --libs</code>
+<p>the results shows the header file can be found in <code>/usr/include/</code>. Upon inspecting <code>/usr/include/</code> we can locate the header file <code>libfoo.h</code></p>
+<p>after the libraries are ensured to be available, fabricate the corresponding makefile:</p>
+<details open>
+<summary><code>makefile</code></summary>
+<pre>
+PKG_CONFIG := pkg-config
+CC     := gcc
+PKGS := glib-2.0 json-glib-1.0 libfoo gstreamer-1.0 gstreamer-sdp-1.0 gstreamer-webrtc-1.0
+LIBS   := $(shell $(PKG_CONFIG) --libs --cflags $(PKGS))
+CFLAGS := -O0 -ggdb -Wall -fno-omit-frame-pointer $(shell $(PKG_CONFIG) --cflags $(PKGS))
+
+all: main.c
+    "$(CC)" $(CFLAGS) $^ $(LIBS) -o ./build/main       
+</pre>
+</details>
+
+<h3>pkg-config</h3>
+<p>to check the search paths for .pc files:</p>
+<code>pkg-config --variable pc_path pkg-config</code>
+
+<h3>Working with locally compiled libraries</h3>
+<p>If some libraries are compiled elsewhere, extra setup is needed to </p>
 
 <h2>Setup Streaming on Raspbian</h2>
 <h3>Enable SSH and Camera</h3>
