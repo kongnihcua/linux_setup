@@ -367,7 +367,12 @@ all: main.c
 <h3>Working with locally compiled libraries</h3>
 <p>If some libraries are compiled elsewhere, extra setup is needed to </p>
 
+
 <h2>Setup Streaming on Raspbian</h2>
+<h3>Force display even without HDMI connected</h3>
+<p>edit the config file:</p>
+<code>sudo nano /boot/config.txt</code>
+<p>uncomment the lines regarding framebuffers.</p>
 <h3>Enable SSH and Camera</h3>
 <code>sudo raspi-config</code>
 <h3>Install Gstreamer</h3>
