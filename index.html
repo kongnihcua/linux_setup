@@ -375,6 +375,8 @@ all: main.c
 <p>uncomment the lines regarding framebuffers.</p>
 <h3>Enable SSH and Camera</h3>
 <code>sudo raspi-config</code>
+<h3>Setup H264 Profile as Main</h3>
+<code>v4l2-ctl --set-ctrl h264_profile=1</code>
 <h3>Install Gstreamer</h3>
 <code>sudo apt install gstreamer1.0-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly</code>
 <h3>Enable v4l2 kernel module every time after system start:</h3>
