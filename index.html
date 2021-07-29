@@ -400,6 +400,11 @@ all: main.c
 <code>sudo modprobe v4l2loopback video_nr=0</code>
 <p>read the stream from raspberry and push to the virtual device:</p>
 <code>gst-launch-1.0 udpsrc port=5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! queue ! avdec_h264 ! decodebin ! videorate ! video/x-raw, framerate=30/1 ! videoconvert ! v4l2sink sync=false device=/dev/video0</code>
+<p>to use more than one webcam, remove the module and reload it specifying two target devices:</p>
+<code>sudo modprobe -r v4l2loopback</code>
+<code>sudo modprobe v4l2loopback video_nr=0,1</code>
+<p>confirm there are two devices now:</p>
+<code>v4l2-ctl --list-device</code>
 
 <h2>Node and NPM</h2>
 <h3>Upgrade NodeJS</h3>
