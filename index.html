@@ -385,8 +385,21 @@ all: main.c
 <code>gst-launch-1.0 v4l2src device=/dev/video0  ! videoconvert ! x264enc tune=zerolatency ! video/x-h264, profile=baseline ! rtph264pay ! udpsink host=192.168.0.80 port=5600</code>
 <h3>Raspivid hardward H264 Streaming</h3>
 <code>raspivid -n -w 1920 -h 1080 -b 4500000 -fps 30 -vf -hf -t 0 -o - | gst-launch-1.0 -v fdsrc !  h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! udpsink host=192.168.0.80 port=5600</code>
+<p>alternatively:</p>
+<code>gst-launch-1.0 -v rpicamsrc camera-number=0 ! capsfilter caps=\"video/x-h264,width=1280,height=720,framerate=30/1\" ! h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! capsfilter caps=\"application/x-rtp, media=video, clock-rate=90000, encoding-name=H264\" ! udpsink host=192.168.0.239 port=5600</code>
 <h3>Server: View Video on Server</h3>
 <code>gst-launch-1.0 -v udpsrc uri=udp://192.168.0.80:5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! decodebin ! videoconvert ! xvimagesink sync=false</code>
+
+
+<h2>Create Virtual Webcam</h2>
+<p>stream from raspberry webcam as before, use 720p since Teams only accepts lower resolution:</p>
+<code>gst-launch-1.0 -v rpicamsrc camera-number=0 ! capsfilter caps=\"video/x-h264,width=1280,height=720,framerate=30/1\" ! h264parse ! queue ! rtph264pay config-interval=10 pt=96 ! capsfilter caps=\"application/x-rtp, media=video, clock-rate=90000, encoding-name=H264\" ! udpsink host=192.168.0.239 port=5600</code>
+<p>on the target machine where virtual cam is to be installed, install the kernel module that creates a virtual v4l2 device:</p>
+<code>sudo apt install v4l2loopback-utils</code>
+<p>create the virtual device:</p>
+<code>sudo modprobe v4l2loopback video_nr=0</code>
+<p>read the stream from raspberry and push to the virtual device:</p>
+<code>gst-launch-1.0 udpsrc port=5600 caps = "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! queue ! avdec_h264 ! decodebin ! videorate ! video/x-raw, framerate=30/1 ! videoconvert ! v4l2sink sync=false device=/dev/video0</code>
 
 <h2>Node and NPM</h2>
 <h3>Upgrade NodeJS</h3>
