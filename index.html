@@ -373,6 +373,7 @@ all: main.c
 <p>edit the config file:</p>
 <code>sudo nano /boot/config.txt</code>
 <p>uncomment the lines regarding framebuffers.</p>
+<p>If a blank screen is showing when accessing through VNC, set the resolution to 1280x720 in raspi-config.</p>
 <h3>Enable SSH and Camera</h3>
 <code>sudo raspi-config</code>
 <h3>Setup H264 Profile as Main</h3>
@@ -406,6 +407,12 @@ all: main.c
 <p>confirm there are two devices now:</p>
 <code>v4l2-ctl --list-device</code>
 
+
+<h2>Install NVIDIA Driver</h2>
+<p>Download both the NVIDIA driver for the GPU, and the cuda developement kit. Use the generic bash installer instead of .deb package.</p>
+<p></p>
+
+
 <h2>Node and NPM</h2>
 <h3>Upgrade NodeJS</h3>
 <p>Install n</p>
@@ -422,6 +429,15 @@ all: main.c
 <code>sudo apt install qt5-default</code>
 <h3>Install Qt Developement Libraries</h3>
 <code>sudo apt-get install libqt5*dev</code>
+
+<h2>Setup WiFi/WLAN Access Point using external wireless USB dongle</h2>
+<h3>Install Driver for WiFi USB </h3>
+<p>As an example we are using the dongle Edimax EW-7811UAC. The respective driver/ linux kernel module is located in:</p>
+<code>https://github.com/gnab/rtl8812au.git</code>
+<p>git clone the repo and then follow the instructions in the Readme. For Ubuntu operating system, there might be needed to disable the Security Boot:</p>
+<code>sudo apt install modutil && sudo mokutil --disable-validation</code>
+<p>then reboot and follow the on screen instruction to disable the security boot.</p>
+<h3>Install dnsmasq</h3>
 
 </div>
 </body>
