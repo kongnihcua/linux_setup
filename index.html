@@ -439,6 +439,29 @@ all: main.c
 <p>then reboot and follow the on screen instruction to disable the security boot.</p>
 <h3>Install dnsmasq</h3>
 
+
+<h2>Setup Radio Receiver</h2>
+<h3>ADS-B Receiver</h3>
+<p>install software for dongle</p>
+<code>sudo apt install rtl-sdr</code>
+<p>confirm the default kernel module for dvb is running</p>
+<code>lsmod | egrep 'sdr|dvb'</code>
+<p>remove the default kernel module for decoding video broadcast data (dvb)</p>
+<code>sudo rmmod rtl2832_sdr dvb_usb_rtl28xxu dvb_usb_v2 rtl2832 dvb_core</code>
+<p>blacklist the unwanted dvb module</p>
+<code>sudo nano /etc/modprobe.d/blacklist-dvb.conf</code>
+<p>add the following content into the file:</p>
+<pre>
+    # for radio reception instead of dvb
+    blacklist dvb_usb_rtl28xxu
+</pre>
+<p>restart, or replug the dongle, check <code>dmesg</code> to confirm the kernel is loaded correctly.</p>
+<p>install the parser</p>
+<code>sudo apt install rtl-sdr</code>
+<p>test the parser is working</p>
+<code>sudo rtl_adsb</code>
+
+
 </div>
 </body>
 </html>
