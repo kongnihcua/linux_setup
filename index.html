@@ -458,9 +458,18 @@ all: main.c
 <p>restart, or replug the dongle, check <code>dmesg</code> to confirm the kernel is loaded correctly.</p>
 <p>install the parser</p>
 <code>sudo apt install rtl-sdr</code>
-<p>test the parser is working</p>
-<code>sudo rtl_adsb</code>
-
+<p>test if the parser is working</p>
+<code>rtl_adsb</code>
+<h2>Create a Virtual Serial Device for ADS-B dumping</h2>
+<p>check the current devices</p>
+<code>ls -l /dev/</code>
+<p>Create device node with custom device major and minor number 999, so it does not collide with system defaults</p>
+<code>sudo mknod /dev/adsb_writer c 999 999</code>
+<code>sudo mknod /dev/adsb_reader c 999 999</code>
+<p>Create Pseudo Serial Ports and link them to the Virtual Devices</p>
+<code>sudo socat -d -d pty,raw,echo=0,link=/dev/adsb_reader pty,raw,echo=0,link=/dev/adsb_writer</code>
+<p>Pipe the ADSB outputs to the virtual Writer Device</p>
+<code>rtl_adsb | sudo tee /dev/adsb_writer</code>
 
 </div>
 </body>
