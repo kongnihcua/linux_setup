@@ -437,7 +437,47 @@ all: main.c
 <p>git clone the repo and then follow the instructions in the Readme. For Ubuntu operating system, there might be needed to disable the Security Boot:</p>
 <code>sudo apt install modutil && sudo mokutil --disable-validation</code>
 <p>then reboot and follow the on screen instruction to disable the security boot.</p>
-<h3>Install dnsmasq</h3>
+<h3>Create Hotspot via Network Manager</h3>
+<p>Open the Network Manager from the task panel. Create a new Wi-Fi connection. Specify the SSID, set the mode as Access Point. Restrict the device to the USB Dongle. Set up a WPA/WPA2 Personal Password.</p>
+<h3>Setup any Raspberry Pi to autoconect to USB Dongle</h3>
+<p>Edit the WiFi connection profiles similar to the example below:</p>
+<code>sudo nano /etc/wpa_supplicant/wpa_supplicant.conf</code>
+<pre>
+network={
+    ssid="usb_dongle_access_point_0"
+    psk="password_ap0"
+    key_mgmt=WPA-PSK
+    priority=2 # larger value means higher priority
+}
+
+network={
+    ssid="home_router"
+    psk="password_router0"
+    key_mgmt=WPA-PSK
+    priority=1 # larger value means higher priority
+}</pre>
+
+
+<h2>Creating an UTC ISO 8601 Timestamp</h2>
+<code>datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')</code>
+
+
+<h2>Generating a Random String of 16 bytes of entropy</h2>
+<p>note the base64 has 6 bits of entropy per character only, therefore the length of string exceeds 16</p>
+<code>openssl rand --base64 16</code>
+
+
+<h2>Network Routing Metric</h2>
+<p>when you check the routing table using <code>ip r</code>, each interface has a different metric. The routes with lower metric will be considered to cheaper to send/receive network packets and hence gets priorty when routing packets to external ip addresses (e.g. internet). Linux by default gives ethernet lowest metric, then comes wireless. There are times that you need to change the metric. e.g. LTE dongle recognised as ethernet while they should be the most expensive.</p>
+<p>edit the DHCP Client settings</p>
+<code>sudo nano /etc/dhcpcd.conf</code>
+<p>add the section</p>
+<pre>
+# overriding default metrics for interfaces
+interface eth1 # not ethernet, it is in fact LTE
+metric 404; # LTE dongle should have higher metric
+</pre>
+<code>sudo service dhcpc restart</code>
 
 </div>
 </body>
