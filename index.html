@@ -165,6 +165,19 @@ Environment: Ubuntu Focal
     </pre>
 </details>
 
+<h2>Access Point Mode for Raspberry Pi 4B</h2>
+<p>If you want to share the internet of a raspberry pi to multiple users, you can configure one of the Network Interfaces of a raspberry pi into access point mode. Here i will present a scenario:</p>
+<h3>share internet for devices of a booth</h3>
+<p>prepare a simple home router</p>
+<p>via a Physical Ethernet cable, connect the raspberry to the WLAN port of the router which is also the default gateway of the network. (The default gateway is where TCP packets will be sent to if the Packet's IP Address does not match any recognised subnets.)</p>
+<p>access to Raspberry and set up the Ethernet Network Interface as a Access Point:</p>
+<code>sudo nmtui</code>
+<p>add a new connection and set its profile name as <code>Ethernet Access Point</code>. By default any clients will be assigned the IP in subnet 10.47.0.X/24</p>
+<p>restrict the profile only to the ethernet device, such as <code>eth0</code></p>
+<p>under <code>IPv4 CONFIGURATION</code>, select <code>Shared</code></p>
+<p>check the box <code>Automatically connect</code></p>
+<p>finish the setup</p>
+
 
 <h2>Setup OpenWRT on Raspberry Pi 4B</h2>
 <h3>Flash OS onto a microSD card</h3>
