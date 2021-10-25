@@ -179,6 +179,49 @@ Environment: Ubuntu Focal
 <p>finish the setup</p>
 
 
+<h2>Minimal Network Setup without Monitor on a Raspberry Pi 4B</h2>
+<p>for the first time setting up a new raspberry pi with minimal effort and without monitor</p>
+<h3>Flash OS onto a microSD card</h3>
+<p>Obtain Image:</p>
+<code>wget https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.zip</code>
+<p>Decompress Image</p>
+<p>Plug in SD card, identify the partition in <code>df</code>, in our case <code>/dev/mmcblk0</code>. If it is also auto mounted, as shown in <code>sudo fdisk -l</code>, run e.g.:</p>
+<code>sudo umount /media/auchingnok/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
+<p>Format the card:</p>
+<code>sudo mkfs.ext4 /dev/mmcblk0</code>
+<p>Flash image:</p>
+<code>sudo dd if=./raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
+<p>Open the <code>boot</code> folder, edit the following lines in <code>config.txt</code>:</p>
+<pre>
+framebuffer_width=1280
+framebuffer_width=720
+</pre>
+<p>create an empty file named <code>ssh</code> in the boot directory</p>
+<p>create a file named <code>wpa_supplicant.conf</code> in the boot directory:</p>
+<pre>
+country=DE
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="NETWORK-NAME"
+    psk="NETWORK-PASSWORD"
+}
+</pre>
+<p>eject the SD card</p>
+<p>insert the SD card to Raspberry Pi and boot it up.</p>
+<p>identify the IP address of the Raspberry, then ssh to the Raspberry with username pi and password raspberry</p>
+<p>setup the following items via <code>sudo raspi-config</code></p>
+<ul>
+    <li>Wireless Lan</li>
+    <li>Password</li>
+    <li>Hostname</li>
+    <li>SSH</li>
+    <li>VNC</li>
+</ul>
+<p>reboot</p>
+
+
 <h2>Setup OpenWRT on Raspberry Pi 4B</h2>
 <h3>Flash OS onto a microSD card</h3>
 <p>Obtain Image:</p>
@@ -200,7 +243,7 @@ Environment: Ubuntu Focal
 <code>passwd</code>
 
 <h3>Setup Network Interface</h3>
-<p>Chang the default static ip address of ethernet card</p>
+<p>Change the default static ip address of ethernet card</p>
 <code>vim /etc/config/network</code>
 <p>under section <code>config interface 'lan'</code>, the concerning line be <code>option ipaddr '192.168.0.10'
 </code>. make sure the ip address is in the same subnet of your local network.</p>
