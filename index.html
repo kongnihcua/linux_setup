@@ -566,6 +566,8 @@ metric 404; # LTE dongle should have higher metric
 <code>sudo socat -d -d pty,raw,echo=0,link=/dev/adsb_reader pty,raw,echo=0,link=/dev/adsb_writer</code>
 <p>Pipe the ADSB outputs to the virtual Writer Device</p>
 <code>rtl_adsb | sudo tee /dev/adsb_writer</code>
+<p>Branch serial signal to multiple addresses</p>
+<code>cat /dev/ttyAMA0 | tee >&2 >(sudo socat - udp:10.111.222.33:4444) >(sudo socat - udp:111.222.333.444:5555)</code>
 
 </div>
 </body>
