@@ -572,7 +572,9 @@ metric 404; # LTE dongle should have higher metric
 
 <h2>Setup NFS System</h2>
 <h3>Host setup (e.g. 192.168.0.234)</h3>
-<p>share a folder on a host to everybody in the local network</p>
+<p>install dependencies</p>
+<code>sudo apt install nfs-kernel-server</code>
+<p>a config file <code>/etc/exports</code> is created. to share a folder on a host to everybody in the local network</p>
 <code>sudo nano /etc/exports</code>
 <p>and add the following line:</p>
 <pre>
@@ -581,7 +583,10 @@ metric 404; # LTE dongle should have higher metric
 <p>apply and update the settings</p>
 <code>sudo exportfs -ra</code>
 <h3>Client setup</h3>
+<p>install dependencies</p>
+<code>sudo apt install nfs-common</code>
 <p>for the clients, mount the shared folder to /mnt/shared_folder_A</p>
+<code>sudo mkdir /mnt/shared_folder_A</code>
 <code>sudo mount -t nfs4 192.168.0.234:/home/user/workspace/target_folder /mnt/shared_folder_A</code>
 
 
