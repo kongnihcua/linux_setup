@@ -569,6 +569,22 @@ metric 404; # LTE dongle should have higher metric
 <p>Branch serial signal to multiple addresses</p>
 <code>cat /dev/ttyAMA0 | tee >&2 >(sudo socat - udp:10.111.222.33:4444) >(sudo socat - udp:111.222.333.444:5555)</code>
 
+
+<h2>Setup NFS System</h2>
+<h3>Host setup (e.g. 192.168.0.234)</h3>
+<p>share a folder on a host to everybody in the local network</p>
+<code>sudo nano /etc/exports</code>
+<p>and add the following line:</p>
+<pre>
+    /home/user/workspace/target_folder     192.168.0.0/24(rw,sync,no_subtree_check,all_squash,anonuid=1001,anongid=1001)
+</pre>
+<p>apply and update the settings</p>
+<code>sudo exportfs -ra</code>
+<h3>Client setup</h3>
+<p>for the clients, mount the shared folder to /mnt/shared_folder_A</p>
+<code>sudo mount -t nfs4 192.168.0.234:/home/user/workspace/target_folder /mnt/shared_folder_A</code>
+
+
 </div>
 </body>
 </html>
