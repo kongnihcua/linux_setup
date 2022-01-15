@@ -575,11 +575,13 @@ metric 404; # LTE dongle should have higher metric
 <p>install dependencies</p>
 <code>sudo apt install nfs-kernel-server</code>
 <p>a config file <code>/etc/exports</code> is created. to share a folder on a host to everybody in the local network</p>
+<p>before configuring export option, check your user uid and gid by <code>id</code>.</p>
 <code>sudo nano /etc/exports</code>
 <p>and add the following line:</p>
 <pre>
     /home/user/workspace/target_folder     192.168.0.0/24(rw,sync,no_subtree_check,all_squash,anonuid=1001,anongid=1001)
 </pre>
+<p>if you want all user to act on behalf of your account, change the anonuid and anongid to match the target uid/gid.</p>
 <p>apply and update the settings</p>
 <code>sudo exportfs -ra</code>
 <h3>Client setup</h3>
