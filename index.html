@@ -592,6 +592,12 @@ metric 404; # LTE dongle should have higher metric
 <code>sudo mount -t nfs4 192.168.0.234:/home/user/workspace/target_folder /mnt/shared_folder_A</code>
 
 
+<h2>Calculate Timezone</h2>
+<p>Translate Local Time in Shanghai to Time in London.</p>
+<code>TZ='Europe/London' date --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
+<p>Get ISO Timestamp</p>
+<code>date --utc --iso-8601=minutes --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
+
 </div>
 </body>
 </html>
