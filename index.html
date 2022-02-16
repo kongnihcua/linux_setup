@@ -581,6 +581,35 @@ metric 404; # LTE dongle should have higher metric
 <p>Branch serial signal to multiple addresses</p>
 <code>cat /dev/ttyAMA0 | tee >&2 >(sudo socat - udp:10.111.222.33:4444) >(sudo socat - udp:111.222.333.444:5555)</code>
 
+
+<h2>Setup NFS System</h2>
+<h3>Host setup (e.g. 192.168.0.234)</h3>
+<p>install dependencies</p>
+<code>sudo apt install nfs-kernel-server</code>
+<p>a config file <code>/etc/exports</code> is created. to share a folder on a host to everybody in the local network</p>
+<p>before configuring export option, check your user uid and gid by <code>id</code>.</p>
+<code>sudo nano /etc/exports</code>
+<p>and add the following line:</p>
+<pre>
+    /home/user/workspace/target_folder     192.168.0.0/24(rw,sync,no_subtree_check,all_squash,anonuid=1001,anongid=1001)
+</pre>
+<p>if you want all user to act on behalf of your account, change the anonuid and anongid to match the target uid/gid.</p>
+<p>apply and update the settings</p>
+<code>sudo exportfs -ra</code>
+<h3>Client setup</h3>
+<p>install dependencies</p>
+<code>sudo apt install nfs-common</code>
+<p>for the clients, mount the shared folder to /mnt/shared_folder_A</p>
+<code>sudo mkdir /mnt/shared_folder_A</code>
+<code>sudo mount -t nfs4 192.168.0.234:/home/user/workspace/target_folder /mnt/shared_folder_A</code>
+
+
+<h2>Calculate Timezone</h2>
+<p>Translate Local Time in Shanghai to Time in London.</p>
+<code>TZ='Europe/London' date --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
+<p>Get ISO Timestamp</p>
+<code>date --utc --iso-8601=minutes --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
+
 </div>
 </body>
 </html>
