@@ -8,11 +8,14 @@
         p {margin-top: 10pt; margin-bottom: 10pt;}
         code {color:blue;}
         pre {color: green;}
-        #navbar {
-            top: 10vh;
+        #navbar-container {
+            overflow-y: auto;
             position: fixed;
-            left: 3vw;
+            padding-top: 10vh;
+            padding-left: 3vw;
             width: 24vw;
+            height: 100%;
+            box-sizing: border-box;
         }
         #navbar a {
             line-height: 1.6;
@@ -20,6 +23,7 @@
         #content {
             margin-left: 30vw;
             margin-right: 30vw;
+            display: inline-block;
         }
     </style>
 </head>
@@ -46,7 +50,7 @@ const load = _ => {
 
 <body onload='load()'>
 
-<div id='navbar'></div>
+<div id='navbar-container'><div id='navbar'></div></div>
 
 <div id='content'>
 
@@ -221,6 +225,14 @@ network={
 </ul>
 <p>reboot</p>
 
+
+<h2>Create Raspberry Pi SD Card Image File</h2>
+<code>sudo dd if=/dev/mmcblk0 | gzip > raspi_backup.img.gz</code>
+<p>to restore image, plugin a new sd card</p>
+<p>Format the card:</p>
+<code>sudo mkfs.ext4 /dev/mmcblk0</code>
+<p>flash the image:</p>
+<code>cat raspi_backup.img.gz | gunzip | sudo dd of=/dev/mmcblk0</code>
 
 <h2>Setup OpenWRT on Raspberry Pi 4B</h2>
 <h3>Flash OS onto a microSD card</h3>
