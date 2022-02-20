@@ -197,8 +197,8 @@ Environment: Ubuntu Focal
 <code>sudo dd if=./raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
 <p>Open the <code>boot</code> folder, edit the following lines in <code>config.txt</code>:</p>
 <pre>
-framebuffer_width=1280
-framebuffer_width=720
+framebuffer_width=1280 # recommend 1024 for 7" touch screen
+framebuffer_width=720 # recommend 614 for 7" touch screen
 </pre>
 <p>create an empty file named <code>ssh</code> in the boot directory</p>
 <p>create a file named <code>wpa_supplicant.conf</code> in the boot directory:</p>
