@@ -287,6 +287,26 @@ config interface 'lan'
 <p>to check the gateway and dns to public network setting is functioning, try to ping a public network address:</p>
 <code>ping google.com</code>
 
+
+<h3>Setup Bluetooth</h3>
+<p>Check status of devices:</p>
+<code>hciconfig</code>
+<code>sudo service bluetooth status</code>
+<p>Check block status of device:</p>
+<code>rfkill</code>
+<p>bluetooth needs to be unblocked:</p>
+<code>rfkill unblock bluetooth</code>
+<p>Bluez library is needed for bluetooth mouse/ keyboard to work:</p>
+<code>sudo apt install bluetooth bluez</code>
+<p>use <code>bluetoothctl</code> to manage scan, discovery, pair, connection of bluetooth clients</p>
+<code>power on</code>
+<code>agent on</code>
+<code>discoverable on</code>
+<code>pairable on</code>
+<p>to skip authentication:</p>
+<code>agent NoInputNoOutput</code>
+<code>default-agent</code>
+
 <h3>Setup Wifi</h3>
 <p>Check status of devices:</p>
 <code>ip a</code>
