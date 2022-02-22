@@ -170,6 +170,18 @@ Environment: Ubuntu Focal
 </details>
 
 <h2>Access Point Mode for Raspberry Pi 4B</h2>
+<p><code>nmtui</code> (Network Manager) is used in place of the default <code>dhcpcd</code></p>
+<p>remove dhcpcd5</p>
+<code>sudo apt remove --purge dhcpcd5</code>
+<p>install dependencies:</p>
+<code>sudo apt install network-manager</code>
+<p>then create the connection profile via:</p>
+<code>sudo nmtui</code>
+<p>set the mode to Access Point and IPv4 to shared. connect to the access point profile via:</p>
+<code>sudo nmcli con up 'access_point_profile'</code>
+<p>neither nmtui nor the panel network icon seem to work</p>
+
+
 <p>If you want to share the internet of a raspberry pi to multiple users, you can configure one of the Network Interfaces of a raspberry pi into access point mode. Here i will present a scenario:</p>
 <h3>share internet for devices of a booth</h3>
 <p>prepare a simple home router</p>
@@ -297,15 +309,8 @@ config interface 'lan'
 <p>bluetooth needs to be unblocked:</p>
 <code>rfkill unblock bluetooth</code>
 <p>Bluez library is needed for bluetooth mouse/ keyboard to work:</p>
-<code>sudo apt install bluetooth bluez</code>
-<p>use <code>bluetoothctl</code> to manage scan, discovery, pair, connection of bluetooth clients</p>
-<code>power on</code>
-<code>agent on</code>
-<code>discoverable on</code>
-<code>pairable on</code>
-<p>to skip authentication:</p>
-<code>agent NoInputNoOutput</code>
-<code>default-agent</code>
+<code>sudo apt install bluetooth pi-bluetooth bluez blueman</code>
+<p>Use the blueman icon on desktop</p>
 
 <h3>Setup Wifi</h3>
 <p>Check status of devices:</p>
