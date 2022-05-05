@@ -224,6 +224,7 @@ network={
     psk="NETWORK-PASSWORD"
 }
 </pre>
+<p>edit the hostname by editing the file <code>rootfs/etc/hostname</code>:</p>
 <p>eject the SD card</p>
 <p>insert the SD card to Raspberry Pi and boot it up.</p>
 <p>identify the IP address of the Raspberry, then ssh to the Raspberry with username pi and password raspberry</p>
@@ -238,6 +239,15 @@ network={
 <p>reboot</p>
 
 
+<h2>Rotate Display of Touch Screen for Raspberry</h2>
+<p>Add the following line to <code>/boot/config.txt</code> around the framebuffer section</p>
+<code>lcd_rotate=2</code>
+<p>to calibrate the screen, install the calibrator:</p>
+<code>sudo apt install xinput-calibrator</code>
+<p>run the calibrator</p>
+<code>xinput_calibrator</code>
+
+
 <h2>Create Raspberry Pi SD Card Image File</h2>
 <code>sudo dd if=/dev/mmcblk0 | gzip > raspi_backup.img.gz</code>
 <p>to restore image, plugin a new sd card</p>
@@ -245,6 +255,12 @@ network={
 <code>sudo mkfs.ext4 /dev/mmcblk0</code>
 <p>flash the image:</p>
 <code>cat raspi_backup.img.gz | gunzip | sudo dd of=/dev/mmcblk0</code>
+
+
+<!-- <h2>Sync Raspbian to GPS Time in internet denied area</h2>
+<p>raspberry has a minimal ntp client provided by the <code>systemd-timesyncd</code> service daemon. By default it is in auto mode where changing of time is restricted.</p>
+<p>if you boot the raspberry without internet access, you can make use of GPS time to set the hardware clock.</p> -->
+
 
 <h2>Setup OpenWRT on Raspberry Pi 4B</h2>
 <h3>Flash OS onto a microSD card</h3>
@@ -405,7 +421,12 @@ sudo gitlab-runner register \
 <h3>Hostname Discovery</h3>
 <p>Discover other Hostnames on the same network</p>
 <code>nmap -sn 192.168.0.*</code>
-
+<p>Install Network Discovery Tools</p>
+<code>sudo apt install net-tools</code>
+<p>Do a fast Address Resolution Protocol scan</p>
+<code>sudo arp-scan --localnet --interface=eno1</code>
+<p>Show the Hostnames of all network devices</p>
+<code>sudo arp</code>
 
 <h2>Janus Gateway</h2>
 <h3>Send and Receive UDP</h3>
