@@ -202,7 +202,7 @@ Environment: Ubuntu Focal
 <code>wget https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.zip</code>
 <p>Decompress Image</p>
 <p>Plug in SD card, identify the partition in <code>df</code>, in our case <code>/dev/mmcblk0</code>. If it is also auto mounted, as shown in <code>sudo fdisk -l</code>, run e.g.:</p>
-<code>sudo umount /media/auchingnok/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
+<code>sudo umount /media/kongnihcua/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
 <p>Format the card:</p>
 <code>sudo mkfs.ext4 /dev/mmcblk0</code>
 <p>Flash image:</p>
@@ -655,6 +655,20 @@ metric 404; # LTE dongle should have higher metric
 <code>TZ='Europe/London' date --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
 <p>Get ISO Timestamp</p>
 <code>date --utc --iso-8601=minutes --date='TZ="Asia/Shanghai" 20220507T21:00'</code>
+
+
+<h2>Setup a Debian Server</h2>
+<p>for the first time setting up a new debian machine</p>
+<h3>Flash OS onto a USB Memory Stick</h3>
+<p>Obtain Minimal Official Image:</p>
+<code>cd ~/Downloads</code>
+<code>wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.3.0-amd64-netinst.iso</code>
+<p>Plug in USB Memory Stick, identify the partition in <code>sudo fdisk -l</code>, in our case <code>/dev/sdc</code>. If it is also auto mounted, as shown in <code>df</code>, run e.g.:</p>
+<code>sudo umount /media/kongnihcua/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
+<p>Format the card:</p>
+<code>sudo mkfs.ext4 /dev/sdc</code>
+<p>Flash image:</p>
+<code>sudo dd if=./debian-11.3.0-amd64-netinst.iso of=/dev/sdc bs=2M conv=fsync</code>
 
 </div>
 </body>
