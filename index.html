@@ -669,6 +669,61 @@ metric 404; # LTE dongle should have higher metric
 <code>sudo mkfs.ext4 /dev/sdc</code>
 <p>Flash image:</p>
 <code>sudo dd if=./debian-11.3.0-amd64-netinst.iso of=/dev/sdc bs=2M conv=fsync</code>
+<p>pull out the stick and plug to the new machine</p>
+<p>boot the new machine and complete the initial setup</p>
+<p>login as root for initial setup:</p>
+<code>su root</code>
+<p>obtain the ethernet driver corresponds to your ethernet card (in our case rtl8125b-2.fw) and save it to a USB drive</p>
+<p>plug in the USB drive. use <code>dmesg</code> to find out the drive name (e.g. /dev/sdb) </p>
+<p>mount the usb drive onto the new machine file system:</p>
+<code>mkdir /mnt/sandisk && mount /dev/sdb1 /mnt/sandisk/</code>
+<p>copy the driver to the target folder:</p>
+<code>cp /mnt/sandisk/rtl8125b-2.fw /lib/firmware/rtl_nic/</code>
+<p>update root filesystem image for booting the kernel:</p>
+<code>/sbin/update-initramfs -u</code>
+<p>reboot the system</p>
+<code>/sbin/reboot</code>
+<h3>Setup Basic Network Connectivity</h3>
+<p>check the ethernet device interface name:</p>
+<code>ip a</code>
+<p>in our case it is enp2s0</p>
+<p>edit the network interface configuration</p>
+<code>nano /etc/network/interfaces</code>
+<p>and add a section:</p>
+<pre>
+# first time setup before installing network manager
+auto enp2s0
+allow-hotplug enp2s0
+iface enp2s0 inet dhcp
+</pre>
+<p>restart the network service</p>
+<code>/sbin/service networking restart</code>
+<p>now an ip address to be obtained from your local network router. check using <code>/sbin/service networking status</code> or <code>ip a</code></p>
+<h3>now the network is ready and we can install additional packagess. set up the sources for debian package manager <code>apt</code></h3>
+<code>apt edit-sources</code>
+<p>check the following entries are present:</p>
+<pre>
+deb http://deb.debian.org/debian bullseye main
+deb-src http://deb.debian.org/debian bullseye main
+
+deb http://security.debian.org/debian-security bullseye-security main
+deb-src http://security.debian.org/debian-security bullseye-security main
+
+deb http://deb.debian.org/debian/ bullseye-updates main
+deb-src http://deb.debian.org/debian/ bullseye-updates main
+</pre>
+<p>save the file and then update apt:</p>
+<code>apt update</code>
+<h3>Install sudo</h3>
+<p>the sudo command is not included in the minimal debian image. up till now we have to explicitly add the prefix <code>/sbin/</code> to call the root commands</p>
+<p>install sudo package:</p>
+<code>apt install sudo</code>
+<h3>Install ssh</h3>
+<p>ssh is required to operate on a headless server.</p>
+<code>sudo apt install ssh</code>
+<h3>Setup Visudo</h3>
+<code>see the visudo section above.</code>
+
 
 </div>
 </body>
