@@ -725,11 +725,18 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <h3>Setup Visudo</h3>
 <p>see the visudo section above.</p>
 
-<h3>Mount Harddrive</h3>
+<h3>Setup Harddrive</h3>
 <p>check all the disks:</p>
 <code>sudo fdisk -l</code>
 <p>check the uuid of the device:</p>
 <code>sudo blkid</code>
+<p>for databases, create a new partition and format it into XFS format.</p>
+<p>first install dependencies:</p>
+<code>sudo apt install xfsprogs</code>
+<p>we are using all the space, so partition is not needed.</p>
+<p>format the partition</p>
+<code>sudo mkfs.xfs /dev/sda</code>
+<p>if there is error during writing zero to the new harddrive, try mkfs.ext4 first and then mkfs.xfs</p>
 
 </div>
 </body>
