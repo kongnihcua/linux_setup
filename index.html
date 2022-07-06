@@ -230,14 +230,24 @@ network={
 <p>identify the IP address of the Raspberry, then ssh to the Raspberry with username pi and password raspberry</p>
 <p>setup the following items via <code>sudo raspi-config</code></p>
 <ul>
-    <li>Wireless Lan</li>
-    <li>Password</li>
-    <li>Hostname</li>
+    <li>Wireless Lan (in case where /etc/wpa_supplicant/wpa_supplicant.conf is still empty)</li>
+    <li>Password (optional)</li>
+    <li>Hostname (in case where /etc/hostname is not updated)</li>
     <li>SSH</li>
-    <li>VNC</li>
+    <li>VNC (optional)</li>
 </ul>
 <p>reboot</p>
 
+
+<h2>Change Pin Functions of Raspberry</h2>
+<p>get the pinout diagram:</p>
+<code>pinout</code>
+<p>check the functions of each GPIO:</p>
+<code>raspi-gpio funcs</code>
+<p>modify the pin functions by editing device-tree</p>
+<code>dtoverlay uart4</code>
+<p>check the current pin settings:</p>
+<code>raspi-gpio get 0-15</code>
 
 <h2>Rotate Display of Touch Screen for Raspberry</h2>
 <p>Add the following line to <code>/boot/config.txt</code> around the framebuffer section</p>
@@ -547,7 +557,9 @@ all: main.c
 <h2>Setup WiFi/WLAN Access Point using external wireless USB dongle</h2>
 <h3>Install Driver for WiFi USB </h3>
 <p>As an example we are using the dongle Edimax EW-7811UAC. The respective driver/ linux kernel module is located in:</p>
-<code>https://github.com/gnab/rtl8812au.git</code>
+<code>git clone https://github.com/gnab/rtl8812au.git</code>
+<code>cd rtl8812au</code>
+<code>git checkout 033a465431aa538b9850691b330255493ec0e2f1</code>
 <p>git clone the repo and then follow the instructions in the Readme. For Ubuntu operating system, there might be needed to disable the Security Boot:</p>
 <code>sudo apt install modutil && sudo mokutil --disable-validation</code>
 <p>then reboot and follow the on screen instruction to disable the security boot.</p>
