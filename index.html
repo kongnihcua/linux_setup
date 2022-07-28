@@ -750,6 +750,21 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <code>sudo mkfs.xfs /dev/sda</code>
 <p>if there is error during writing zero to the new harddrive, try mkfs.ext4 first and then mkfs.xfs</p>
 
+
+<h2>Setup OTG(On-The-Go)/Gadget Mode Usb WebCam</h2>
+<p>In the gadget mode we set up ethernet interface via USB on a Raspberry Pi Zero. So the Pi Zero can stream video from WebCam through USB via GStreamer library.</p>
+<p>Edit the SD card of the Raspberry Pi</p>
+<code>/boot/config.txt</code>
+<pre>
+    dtoverlay=dwc2
+</pre>
+<code>sudo nano /etc/modules</code>
+<pre>
+    dwc2
+    g_ether
+</pre>
+<p>Make sure the USB used also has the data wires available. If not the host machine cannot recognise the usb0 interface.</p>
+
 </div>
 </body>
 </html>
