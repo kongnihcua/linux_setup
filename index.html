@@ -765,6 +765,82 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 </pre>
 <p>Make sure the USB used also has the data wires available. If not the host machine cannot recognise the usb0 interface.</p>
 
+
+
+<h2>Link local folder to USB or External Drive</h2>
+<p>if your local eMMC is limited in space, link your local workspace symbolically to an external drive.</p>
+<code>sudo mkdir /mnt/usb_drive</code>
+<code>sudo mount /dev/sda /mnt/usb_drive</code>
+<code>sudo chown your_username /mnt/usb_drive</code>
+<code>mkdir /mnt/usb_drive/workspace</code>
+<code>ln --symbolic /mnt/usb_drive/workspace workspace</code>
+
+
+<h2>Setup Nvidia Jetson Nano</h2>
+
+<h3>Hardware Recovery Mode</h3>
+<p>On the board, short the pin <code>FC REC</code> with <code>GND</code>. Power cycle and connect the USB port to a Host PC. Host PC should detect a usb Nvidia device when calling</p>
+<code>lsusb</code>
+
+<h3>Flash Base Image to eMMC</h3>
+<p>prepare the Jetson Linux image. It includes Linux Kernel, UEFI bootloader, NVIDIA drivers, flashing utilities, sample filesystem based on Ubuntu, and more for the Jetson platform. <a href="https://developer.nvidia.com/embedded/jetson-linux">Info</a></p>
+<p>flash the firmware  Jetson Linux Driver Package to the jetson board.</p>
+<p>get the Nvidia L4T board support package</p>
+<code>cd ~/Downloads && wget https://developer.nvidia.com/embedded/l4t/r32_release_v7.2/t210/jetson-210_linux_r32.7.2_aarch64.tbz2</code>
+<p>get the sample rootfs (root file system)</p>
+<code>wget https://developer.nvidia.com/embedded/l4t/r32_release_v7.2/t210/tegra_linux_sample-root-filesystem_r32.7.2_aarch64.tbz2</code>
+<code>tar xf Jetson-210_Linux_R32.7.2_aarch64.tbz2</code>
+<code>cd Linux_for_Tegra/</code>
+<code>cd rootfs/</code>
+<code>sudo tar -xf ~/Downloads/Tegra_Linux_Sample-Root-Filesystem_R32.7.2_aarch64.tbz2</code>
+<code>cd ~/Downloads/Linux_for_Tegra</code>
+<code>sudo ./apply_binaries.sh</code>
+<code>sudo ./flash.sh jetson-nano-devkit-emmc mmcblk0p1</code>
+<p>the board is now flashed. Unplug the USB cable, unplug the <code>FC REC</code> pin.</p>
+<p>Reset the board by shorting <code>SYS RST</code> pin with <code>GND</code> pin. Remove the short after a few seconds.</p>
+<p>Now all pins should be freed. Power up the board and continue the initial setup on a HDMI monitor.</p>
+<p>make sure to set the power mode to 5W, or there will be untrivial issues</p>
+
+<h3>Move <code>/usr/local</code> directory to external drive</h3>
+<p>due to the limited storage space, we move the <code>/usr/local</code> to external drive.</p>
+<p>plug in a usb stick and format it into ext4:</p>
+<code>sudo mkfs.ext4 /dev/sdd</code>
+<p>mount the usb to system:</p>
+<code>sudo mount /dev/usb_drive /mnt</code>
+<p>copy the contents of <code>/usr</code> of the sample filesystem to the target location:</p>
+<code>sudo cp --archive -r ~/Downloads/Linux_for_Tegra/rootfs/usr/local/* /mnt</code>
+<p>unplug the USB drive and plug it to the Jetson Board.</p>
+<p>login to the Jetson and obtain the UUID of the USB:</p>
+<code>sudo lsblk -f</code>
+<p>or:</p>
+<code>ls /dev/disk/by-uuid/</code>
+<p>open <code>fstab</code> to edit the mount points during boot:</p>
+<code>sudo nano /etc/fstab</code>
+<p>add the following line:</p>
+<pre>
+UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0       2
+</pre>
+<p>save the file and reboot the system</p>
+<p>if the boot is normal, the new <code>/usr/local</code> is functional. run <code>df</code> to confirm.</p>
+<p>mark the /usr/local so we don't mix it up with the original /usr/local</p>
+<code>sudo touch /usr/local/usb_drive.txt</code>
+
+<h3>create linked workspace directory on USB drive</h3>
+<p>now the new <code>/usr/local</code> is mounted, create a workspace folder:</p>
+<code>cd /usr/local && sudo mkdir workspace && sudo chown pi /usr/local/workspace</code>
+<p>create link in home folder:</p>
+<code>ln --symbolic /usr/local/workspace ~/workspace</code>
+
+<h3>APT update issue</h3>
+<p>in case the APT cannot properly update its repository list, remove the cached files before reruning <code>sudo apt update</code>:</p>
+<code>sudo rm -rf /var/lib/apt/lists/*</code>
+
+<h3>Install Tegra Driver and CUDA SDK</h3>
+<p>use APT to install the dependencies</p>
+<code>sudo apt install cuda-toolkit-10-2</code>
+
+<h3>Install ROS Kinetic</h3>
+
 </div>
 </body>
 </html>
