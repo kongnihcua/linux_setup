@@ -738,6 +738,53 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <code>sudo mkfs.xfs /dev/sda</code>
 <p>if there is error during writing zero to the new harddrive, try mkfs.ext4 first and then mkfs.xfs</p>
 
+
+<h3>Setup VPN</h3>
+<p>A PKI (Public Key Infrastructure) is required to establish a secure network. A basic set consists of three entities, namely the Certificate Authority which establishes root trust, the VPN Host Server that manages all login and sessions, and the Clients.</p>
+<p>install dependencies on all participating machines:</p>
+<code>sudo apt install openvpn</code>
+
+<h4>Setup CA</h4>
+<p>setup Certificate Authority first. login as root:</p>
+<code>su root</code>
+<p>change directory to the openvpn folder:</p>
+<code>cd /etc/openvpn</code>
+<p>Initiate the PKI workspace:</p>
+<code>sudo /usr/share/easy-rsa/easyrsa init-pki</code>
+<p>a directory <pre>pki</pre> as created. create a public master Certificate Authority (CA) certificate and a private key:</p>
+<code>sudo /usr/share/easy-rsa/easyrsa build-ca</code>
+<p>/etc/openvpn/pki/ca.crt is created. create a certificate without password protection</p>
+
+
+<h4>Setup VPN Host/ Server</h4>
+<p>generate a certificate request and a private key pair</p>
+<code>sudo /usr/share/easy-rsa/easyrsa gen-req 12.345.678.90 nopass</code>
+<p>setup Diffie-Hellman parameters, which will be used for session key generation. A minimum of 1024 bits is required.</p>
+<code>sudo /usr/share/easy-rsa/easyrsa gen-dh</code>
+<p>Using the Private Key of Certificate Authority, sign the host's public key:</p>
+<code>sudo /usr/share/easy-rsa/easyrsa sign-req server 12.345.678.90</code>
+<p>now issue a private-public key pair for the first client machine</p>
+<code>sudo /usr/share/easy-rsa/easyrsa gen-req myclient1 nopass</code>
+<p>Using the Private Key of Certificate Authority, sign the client's public key:</p>
+<code>sudo /usr/share/easy-rsa/easyrsa sign-req client myclient1</code>
+
+<h4>Setup Client</h4>
+<p>you can also create a certificate request and a private key on the client machine first.</p>
+<p><code>sudo apt install openvpn</code></p>
+<p>optional: if there is already pki initiated, skip this step:</p>
+<p><code>/usr/share/easy-rsa/easyrsa init-pki</code></p>
+<p><code>/usr/share/easy-rsa/easyrsa gen-req myClient1 nopass</code></p>
+<p>the generated items are saved to <pre>~/pki/reqs/myClient1.req</pre> and <pre>~/pki/private/myClient1.key</pre>.</p>
+<p>copy manually the content of the request:</p>
+<code>nano ~/pki/reqs/myClient1.req</code>
+<p>send the request to the CA Server and save it to <pre>/etc/openvpn/pki/reqs/myClient1.req</pre>:</p>
+<code>sudo nano /etc/openvpn/pki/reqs/myClient1.req</code>
+<p>sign the request using CA</p>
+<code>cd /etc/openvpn && /usr/share/easy-rsa/easyrsa sign-req client myClient1</code>
+<p>now a certificate is issued to <pre>/etc/openvpn/pki/issued/myClient1.crt</pre>.</p>
+<h5>import CA public certificate</h5>
+
+
 </div>
 </body>
 </html>
