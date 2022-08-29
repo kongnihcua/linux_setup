@@ -843,25 +843,31 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p><code>sudo ./apply_binaries.sh</code></p>
 <p><code>sudo ./flash.sh jetson-nano-devkit-emmc mmcblk0p1</code></p>
 <p>the board is now flashed. Unplug the USB cable, unplug the <code>FC REC</code> pin.</p>
-<p>Reset the board by shorting <code>SYS RST</code> pin with <code>GND</code> pin. Remove the short after a few seconds.</p>
-<p>Now all pins should be freed. Power up the board and continue the initial setup on a HDMI monitor.</p>
+<p>With power still on, Reset the board by shorting <code>SYS RST</code> pin with <code>GND</code> pin. Next, plug in an HDMI monitor. After a few seconds, remove the pin short. The board will power up again. </p>
+<p>Now all pins should be freed. Continue the initial setup on-screen.</p>
+<p>Connect the jumper wire to two <code>GND</code> pins to avoid losing the cable.</p>
 <p>make sure to set the power mode to 5W, or there will be untrivial issues</p>
+<p>after the initial setup/ configuration is done, log in to the new system.</p>
+<p>disable unattended-upgrades: edit the file <code>/etc/apt/apt.conf.d/10periodic</code> and set <code>APT::Periodic::Update-Package-Lists</code> to <code>"0"</code></p>
+<code>sudo apt remove --purge update-notifier update-notifier-common</code>
 
 <h3>Move <code>/usr/local</code> directory to external drive</h3>
-<p>due to the limited storage space, we move the <code>/usr/local</code> to external drive.</p>
-<p>plug in a usb stick and format it into ext4:</p>
+<p>due to the limited storage space, we move the <code>/usr/local</code> to an external USB drive.</p>
+<p>on the host machine, plug in a usb stick (SanDisk UltraFit 57.3 GB in this case), confirm using <code>sudo fdisk -l</code> and format it into ext4. For simplicity we format it without partitioning:</p>
 <code>sudo mkfs.ext4 /dev/sdd</code>
-<p>mount the usb to system:</p>
-<code>sudo mount /dev/usb_drive /mnt</code>
+<p>Find the mount point using <code>df</code>, unmount, and re-mount the usb to <code>/mnt/jetson_usb</code>:</p>
+<p><code>sudo umount -l /media/your_username/12345678-1234-1234-1234-123412341234</code></p>
+<p><code>sudo mkdir /mnt/jetson_usb && sudo mount /dev/sdd /mnt/jetson_usb</code></p>
 <p>copy the contents of <code>/usr</code> of the sample filesystem to the target location:</p>
-<code>sudo cp --archive -r ~/Downloads/Linux_for_Tegra/rootfs/usr/local/* /mnt</code>
-<p>unplug the USB drive and plug it to the Jetson Board.</p>
+<p><code>sudo cp --archive -r ~/Downloads/Linux_for_Tegra/rootfs/usr/local/* /mnt/jetson_usb</code></p>
+<p>Unmount the USB by <code>sudo umount -l /mnt/jetson_usb</code></p>
+<p>unplug the USB drive and plug it to the Jetson Board's USB2.0 port</p>
 <p>login to the Jetson and obtain the UUID of the USB:</p>
 <code>sudo lsblk -f</code>
 <p>or:</p>
 <code>ls /dev/disk/by-uuid/</code>
 <p>open <code>fstab</code> to edit the mount points during boot:</p>
-<code>sudo nano /etc/fstab</code>
+<code>sudo apt install nano && sudo nano /etc/fstab</code>
 <p>add the following line:</p>
 <pre>
 UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0       2
@@ -869,7 +875,7 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <p>save the file and reboot the system</p>
 <p>if the boot is normal, the new <code>/usr/local</code> is functional. run <code>df</code> to confirm.</p>
 <p>mark the /usr/local so we don't mix it up with the original /usr/local</p>
-<code>sudo touch /usr/local/usb_drive.txt</code>
+<code>sudo touch /usr/local/is_usb.txt</code>
 
 <h3>create linked workspace directory on USB drive</h3>
 <p>now the new <code>/usr/local</code> is mounted, create a workspace folder:</p>
@@ -880,12 +886,26 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <h3>APT update issue</h3>
 <p>in case the APT cannot properly update its repository list, remove the cached files before reruning <code>sudo apt update</code>:</p>
 <code>sudo rm -rf /var/lib/apt/lists/*</code>
+<p>in case the USB is damaged and you swapped to a new clean USB, the APT need to be forced overwriting to recover from the broken state. An example of possible hot fix is to pass dpkg a force-overwrite signal.</p>
+<code>sudo apt install --fix-broken -o DPkg::options::="--force-overwrite"</code>
 
 <h3>Install Tegra Driver and CUDA SDK</h3>
 <p>use APT to install the dependencies</p>
 <code>sudo apt install cuda-toolkit-10-2</code>
 
 <h3>Install ROS Kinetic</h3>
+<p>see repo of ros_desktop_full</p>
+
+
+<h3>Patching</h3>
+<p>direct patch by SED Stream-Editor:</p>
+<code>sed --in-place 's/original/updated/g' filepath</code>
+<p>Create patch by git diff</p>
+<code>git -C ../nginx-rtmp-module diff > nginx-rtmp-module.patch</code>
+<p>Apply patch to another git folder</p>
+<code>git -C ../nginx-rtmp-module apply --whitespace=warn -p1 $PWD/nginx-rtmp-module.patch</code>
+
+
 
 </div>
 </body>
