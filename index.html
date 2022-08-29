@@ -834,14 +834,14 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p>get the Nvidia L4T board support package</p>
 <code>cd ~/Downloads && wget https://developer.nvidia.com/embedded/l4t/r32_release_v7.2/t210/jetson-210_linux_r32.7.2_aarch64.tbz2</code>
 <p>get the sample rootfs (root file system)</p>
-<code>wget https://developer.nvidia.com/embedded/l4t/r32_release_v7.2/t210/tegra_linux_sample-root-filesystem_r32.7.2_aarch64.tbz2</code>
-<code>tar xf Jetson-210_Linux_R32.7.2_aarch64.tbz2</code>
-<code>cd Linux_for_Tegra/</code>
-<code>cd rootfs/</code>
-<code>sudo tar -xf ~/Downloads/Tegra_Linux_Sample-Root-Filesystem_R32.7.2_aarch64.tbz2</code>
-<code>cd ~/Downloads/Linux_for_Tegra</code>
-<code>sudo ./apply_binaries.sh</code>
-<code>sudo ./flash.sh jetson-nano-devkit-emmc mmcblk0p1</code>
+<p><code>wget https://developer.nvidia.com/embedded/l4t/r32_release_v7.2/t210/tegra_linux_sample-root-filesystem_r32.7.2_aarch64.tbz2</code></p>
+<p><code>tar xf Jetson-210_Linux_R32.7.2_aarch64.tbz2</code></p>
+<p><code>cd Linux_for_Tegra/</code></p>
+<p><code>cd rootfs/</code></p>
+<p><code>sudo tar -xf ~/Downloads/Tegra_Linux_Sample-Root-Filesystem_R32.7.2_aarch64.tbz2</code></p>
+<p><code>cd ~/Downloads/Linux_for_Tegra</code></p>
+<p><code>sudo ./apply_binaries.sh</code></p>
+<p><code>sudo ./flash.sh jetson-nano-devkit-emmc mmcblk0p1</code></p>
 <p>the board is now flashed. Unplug the USB cable, unplug the <code>FC REC</code> pin.</p>
 <p>Reset the board by shorting <code>SYS RST</code> pin with <code>GND</code> pin. Remove the short after a few seconds.</p>
 <p>Now all pins should be freed. Power up the board and continue the initial setup on a HDMI monitor.</p>
