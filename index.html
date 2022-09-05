@@ -12,13 +12,14 @@
             overflow-y: auto;
             position: fixed;
             padding-top: 10vh;
+            padding-bottom: 10vh;
             padding-left: 3vw;
             width: 24vw;
             height: 100%;
             box-sizing: border-box;
         }
-        #navbar a {
-            line-height: 1.6;
+        #navbar p {
+            margin: 24px 0;
         }
         #content {
             margin-left: 30vw;
@@ -37,13 +38,16 @@ const load = _ => {
         // add id attribute
         x.setAttribute('id',x.innerHTML.replace(' ','_'))
         // create link
+        let p = document.createElement('p')
         let a = document.createElement('a')
         a.setAttribute('href','#' + x.getAttribute('id'))
         a.innerHTML = x.innerHTML
+
+        p.appendChild(a)
         // add link to navbar
-        navbar.appendChild(a)
+        navbar.appendChild(p)
         // add line break
-        navbar.appendChild(document.createElement('br'))
+        // navbar.appendChild(document.createElement('br'))
     })
 }
 </script>
@@ -757,45 +761,55 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <code>sudo apt install openvpn</code>
 
 <h4>Setup CA</h4>
-<p>setup Certificate Authority first. login as root:</p>
-<code>su root</code>
+<p>setup Certificate Authority first.</p>
 <p>change directory to the openvpn folder:</p>
 <code>cd /etc/openvpn</code>
 <p>Initiate the PKI workspace:</p>
 <code>sudo /usr/share/easy-rsa/easyrsa init-pki</code>
-<p>a directory <pre>pki</pre> as created. create a public master Certificate Authority (CA) certificate and a private key:</p>
+<p>a directory <pre>pki</pre> is created. create a public master Certificate Authority (CA) certificate and a private key:</p>
 <code>sudo /usr/share/easy-rsa/easyrsa build-ca</code>
-<p>/etc/openvpn/pki/ca.crt is created. create a certificate without password protection</p>
+<p>use the default when prompted. Then the cert <code>/etc/openvpn/pki/ca.crt</code> is created.</p>
 
 
 <h4>Setup VPN Host/ Server</h4>
+<p>change directory to <code>/etc/openvpn</code></p>
+<code>cd /etc/openvpn</code>
 <p>generate a certificate request and a private key pair</p>
 <code>sudo /usr/share/easy-rsa/easyrsa gen-req 12.345.678.90 nopass</code>
 <p>setup Diffie-Hellman parameters, which will be used for session key generation. A minimum of 1024 bits is required.</p>
 <code>sudo /usr/share/easy-rsa/easyrsa gen-dh</code>
+<p>the generated file is <code>/etc/openvpn/pki/dh.pem</code></p>
 <p>Using the Private Key of Certificate Authority, sign the host's public key:</p>
 <code>sudo /usr/share/easy-rsa/easyrsa sign-req server 12.345.678.90</code>
-<p>now issue a private-public key pair for the first client machine</p>
+<p>the issued certificate is found at <code>/etc/openvpn/pki/issued/12.345.678.90.crt</code></p>
+
+<p>(optional) now issue a private-public key pair for the first client machine</p>
 <code>sudo /usr/share/easy-rsa/easyrsa gen-req myclient1 nopass</code>
-<p>Using the Private Key of Certificate Authority, sign the client's public key:</p>
+<p>(optional) Using the Private Key of Certificate Authority, sign the client's public key:</p>
 <code>sudo /usr/share/easy-rsa/easyrsa sign-req client myclient1</code>
 
 <h4>Setup Client</h4>
 <p>you can also create a certificate request and a private key on the client machine first.</p>
 <p><code>sudo apt install openvpn</code></p>
+<p>change directory to <code>/etc/openvpn</code></p>
 <p>optional: if there is already pki initiated, skip this step:</p>
-<p><code>/usr/share/easy-rsa/easyrsa init-pki</code></p>
-<p><code>/usr/share/easy-rsa/easyrsa gen-req myClient1 nopass</code></p>
-<p>the generated items are saved to <pre>~/pki/reqs/myClient1.req</pre> and <pre>~/pki/private/myClient1.key</pre>.</p>
+<p><code>sudo /usr/share/easy-rsa/easyrsa init-pki</code></p>
+<p><code>sudo /usr/share/easy-rsa/easyrsa gen-req client_hostname nopass</code></p>
+<p>the generated items are saved to <pre>/etc/openvpn/pki/reqs/client_hostname.req</pre> and <pre>/etc/openvpn/pki/private/client_hostname.key</pre>.</p>
 <p>copy manually the content of the request:</p>
-<code>nano ~/pki/reqs/myClient1.req</code>
-<p>send the request to the CA Server and save it to <pre>/etc/openvpn/pki/reqs/myClient1.req</pre>:</p>
-<code>sudo nano /etc/openvpn/pki/reqs/myClient1.req</code>
+<code>sudo nano /etc/openvpn/pki/reqs/client_hostname.req</code>
+<p>send the request to the CA Server and save it to <pre>/etc/openvpn/pki/incoming/client_hostname.req</pre>:</p>
+<code>sudo mkdir /etc/openvpn/pki/incoming sudo nano /etc/openvpn/pki/incoming/client_hostname.req</code>
+<p>at the server, import the incoming request</p>
+<code>sudo /usr/share/easy-rsa/easyrsa import-req /etc/openvpn/pki/incoming/client_hostname.req client_hostname</code>
 <p>sign the request using CA</p>
-<code>cd /etc/openvpn && /usr/share/easy-rsa/easyrsa sign-req client myClient1</code>
-<p>now a certificate is issued to <pre>/etc/openvpn/pki/issued/myClient1.crt</pre>.</p>
-<h5>import CA public certificate</h5>
-
+<code>cd /etc/openvpn && sudo /usr/share/easy-rsa/easyrsa sign-req client client_hostname</code>
+<p>now a certificate is issued to <pre>/etc/openvpn/pki/issued/client_hostname.crt</pre>.</p>
+<p>print the certificate: <code>sudo cat /etc/openvpn/pki/issued/client_hostname.crt</code></p>
+<p>at the client, import the signed certificate:</p>
+<code>sudo mkdir /etc/openvpn/pki/issued && sudo nano /etc/openvpn/pki/issued/client_hostname.crt</code>
+<p>on client, import CA public certificate from server:</p>
+<code>sudo nano /etc/openvpn/pki/ca.crt</code>
 
 <h2>Setup OTG(On-The-Go)/Gadget Mode Usb WebCam</h2>
 <p>In the gadget mode we set up ethernet interface via USB on a Raspberry Pi Zero. So the Pi Zero can stream video from WebCam through USB via GStreamer library.</p>
