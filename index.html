@@ -755,12 +755,12 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p>if there is error during writing zero to the new harddrive, try mkfs.ext4 first and then mkfs.xfs</p>
 
 
-<h3>Setup VPN</h3>
+<h2>Setup VPN</h2>
 <p>A PKI (Public Key Infrastructure) is required to establish a secure network. A basic set consists of three entities, namely the Certificate Authority which establishes root trust, the VPN Host Server that manages all login and sessions, and the Clients.</p>
 <p>install dependencies on all participating machines:</p>
 <code>sudo apt install openvpn</code>
 
-<h4>Setup CA</h4>
+<h3>Setup CA</h3>
 <p>setup Certificate Authority first.</p>
 <p>change directory to the openvpn folder:</p>
 <code>cd /etc/openvpn</code>
@@ -771,7 +771,7 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p>use the default when prompted. Then the cert <code>/etc/openvpn/pki/ca.crt</code> is created.</p>
 
 
-<h4>Setup VPN Host/ Server</h4>
+<h3>Setup VPN Host/ Server</h3>
 <p>change directory to <code>/etc/openvpn</code></p>
 <code>cd /etc/openvpn</code>
 <p>generate a certificate request and a private key pair</p>
@@ -788,7 +788,7 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p>(optional) Using the Private Key of Certificate Authority, sign the client's public key:</p>
 <code>sudo /usr/share/easy-rsa/easyrsa sign-req client myclient1</code>
 
-<h4>Setup Client</h4>
+<h3>Setup Client</h3>
 <p>you can also create a certificate request and a private key on the client machine first.</p>
 <p><code>sudo apt install openvpn</code></p>
 <p>change directory to <code>/etc/openvpn</code></p>
