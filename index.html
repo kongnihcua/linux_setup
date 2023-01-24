@@ -1081,6 +1081,65 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <code>for i in *.part; do mv "$i" "${i/\.part/}"; done</code>
 
 
+<h3>Setting up VNC</h3>
+
+<h4>Server</h4>
+<p>setup x11vnc:</p>
+<code>sudo apt install x11vnc</code>
+<p>start the server:</p>
+<code>x11vnc -display :0 -shared -passwd sample_secret_password -forever</code>
+<p>this allows a persistent opened port for unattended access. after testing this can be put to local cron jobs throught the @reboot directive:</p>
+<code>crontab -e</code>
+<p>
+    <code>@reboot while true; do x11vnc -display :0 -shared -passwd sample_password -forever >/home/sample_user/cron_vnc.log 2>/home/sample_user/cron_vnc.err; sleep 10; done</code>
+</p>
+<p>for extra security, it is recommended to use TLS encryption. An example block for nginx reverse proxy server:</p>
+<pre>
+    # TCP streams for VNC messages
+
+    upstream stream_vnc {
+        server 192.168.0.185:5900;
+    }
+    
+    # TLS VNC server port forwarding
+    server {
+        # https server
+        listen 5900 ssl;
+        
+        ssl_certificate           ssl/tmp/example.com.cer;
+        ssl_certificate_key       ssl/tmp/example.com.key;
+        
+        ssl_protocols         SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+        ssl_ciphers           HIGH:!aNULL:!MD5;
+        #ssl_session_cache     shared:SSL:20m;
+        ssl_session_timeout   4h;
+        ssl_handshake_timeout 30s;
+
+        
+        proxy_ssl off;
+        # although the domain name are different, all vnc points to the same server.
+        proxy_pass stream_vnc;
+        proxy_timeout 30s;
+        proxy_connect_timeout 30s;
+    }
+</pre>
+<p>where the upstream points to the vnc server/machine.</p>
+
+<h4>Client</h4>
+<p>setup ssvnc</p>
+<code>sudo apt install ssvnc</code>
+<p>start ssvnc:</p>
+<code>ssvnc</code>
+<p>enter the following settings:</p>
+<pre>
+    VNC Host:Display = example.com:1234
+    VNC Password = sample_secret_password
+    Verify All Certs = false
+    Use SSL = true
+</pre>
+<p>and then connect.</p>
+
+
 </div>
 </body>
 </html>
