@@ -811,6 +811,10 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 <p>on client, import CA public certificate from server:</p>
 <code>sudo nano /etc/openvpn/pki/ca.crt</code>
 
+<h3>Setup TLS HMAC Signature Authentication Mechanism</h3>
+<p>UDP Handshake Packets can be signed with a shared secret for integrity check.</p>
+<p>copy the <code>/etc/openvpn/ta.key</code> from server to client.</p>
+
 
 <h3>Setup Client on Server side</h3>
 <p>create a new pair of Client Private Key and Client Certificate on the VPN server:</p>
