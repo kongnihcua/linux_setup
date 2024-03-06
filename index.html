@@ -987,6 +987,25 @@ verb 4
 <p>Make sure the USB used also has the data wires available. If not the host machine cannot recognise the usb0 interface.</p>
 
 
+<h2>Force UDP Packets to use specific Network Interface</h2>
+<p>Suppose there are two network interfaces, one is unmetered, while the other one, wlo123456, is more secure but metered. The default route uses the unmetered network but we want to use the secure network for vpn connection (vpn server at 88.88.88.88). The vpn connection uses specific UDP outgoing port 12345.</p>
+<pre>
+echo 'get the IP address of the metered device...'
+WIFI_DONGLE_IP=$(ip r list default dev wlo123456 | grep -o 'via [0-9]*\.[0-9]*\.[0-9]*.[0-9]*' | grep -o '[0-9].*')
+echo 'add device specific route table...'
+sudo ip route flush table 1
+sudo ip route add 88.88.88.88/32 via $WIFI_DONGLE_IP dev wlo123456 table 1
+echo 'mark all udp packets targeting 12345 destination port...'
+sudo iptables -A OUTPUT -t mangle -p udp -m udp  --dport 12345 -j MARK --set-mark 1
+sudo iptables -t nat -A POSTROUTING -o wlo123456 -j MASQUERADE
+sudo ip rule add from all fwmark 1 table 1
+sudo ip rule show
+echo 'iptable summary:'
+sudo iptables -t mangle -L -nv
+sudo ip route show table 1
+sudo service openvpn@client123 restart
+</pre>
+
 
 <h2>Link local folder to USB or External Drive</h2>
 <p>if your local eMMC is limited in space, link your local workspace symbolically to an external drive.</p>
