@@ -143,6 +143,10 @@ Environment: Ubuntu Focal
 <li><code>$PG/createdb DB_NAME</code></li>
 
 
+<h2>Remove a file from git repo history.</h2>
+<code>git filter-branch --index-filter 'git rm -rf --cached --ignore-unmatch target_file_path' HEAD</code>
+
+
 <h2>Access Client Shell of PostgresSQL</h2>
 <code>$PG/psql DB_NAME</code>
 
