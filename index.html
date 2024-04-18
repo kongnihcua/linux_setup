@@ -207,7 +207,7 @@ Environment: Ubuntu Focal
 <p>for the first time setting up a new raspberry pi with minimal effort and without monitor</p>
 <h3>Flash OS onto a microSD card</h3>
 <p>Obtain Image:</p>
-<code>wget https://downloads.raspberrypi.org/raspios_armhf/images/raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.zip</code>
+<code>wget https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf-lite.img.xz</code>
 <p>Decompress Image</p>
 <p>Plug in SD card, identify the partition in <code>df</code>, in our case <code>/dev/mmcblk0</code>. If it is also auto mounted, as shown in <code>sudo fdisk -l</code>, run e.g.:</p>
 <code>sudo umount /media/kongnihcua/1f84f91b-62f9-45f7-ac48-38ce064f32c1</code>
@@ -215,6 +215,11 @@ Environment: Ubuntu Focal
 <code>sudo mkfs.ext4 /dev/mmcblk0</code>
 <p>Flash image:</p>
 <code>sudo dd if=./raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
+<p>Create a salted password hash for the new user:</p>
+<code>openssl passwd -6</code>
+<p>create a file named <code>userconf.txt</code> in the boot directory. the content should be a single line in the form of user:pass_hash. for example:</p>
+<code>pi:$6$Xr8FTxVfvDBL73V4$3vZ9/JeAWxv20/msU6qiXz/LWHBfqDX0a8vpwEk/MLagq60xQKf1Rp0PP8lxGFQ8el7q58gcpujiaf11oN40N1</code>
+<p>if the wrong hash is used and the raspberry is started, it will create an inaccessible account. to fix simply edit the file <code>/etc/passwd</code></p>
 <p>Open the <code>boot</code> folder, edit the following lines in <code>config.txt</code>:</p>
 <pre>
 framebuffer_width=1280 # recommend 1024 for 7" touch screen
