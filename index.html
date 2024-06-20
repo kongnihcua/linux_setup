@@ -214,12 +214,12 @@ Environment: Ubuntu Focal
 <p>Format the card:</p>
 <code>sudo mkfs.ext4 /dev/mmcblk0</code>
 <p>Flash image:</p>
-<code>sudo dd if=./raspios_armhf-2021-05-28/2021-05-07-raspios-buster-armhf.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
+<code>sudo dd if=./rraspios_lite_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf-lite.img of=/dev/mmcblk0 bs=2M conv=fsync</code>
 <p>Create a salted password hash for the new user:</p>
 <code>openssl passwd -6</code>
 <p>create a file named <code>userconf.txt</code> in the boot directory. the content should be a single line in the form of user:pass_hash. for example:</p>
 <code>pi:$6$Xr8FTxVfvDBL73V4$3vZ9/JeAWxv20/msU6qiXz/LWHBfqDX0a8vpwEk/MLagq60xQKf1Rp0PP8lxGFQ8el7q58gcpujiaf11oN40N1</code>
-<p>if the wrong hash is used and the raspberry is started, it will create an inaccessible account. to fix simply edit the file <code>/etc/passwd</code></p>
+<p>make sure there is no unnecessary space. if the wrong hash is used and the raspberry is started, it will create an inaccessible account. to fix simply edit the file <code>/etc/passwd</code></p>
 <p>Open the <code>boot</code> folder, edit the following lines in <code>config.txt</code>:</p>
 <pre>
 framebuffer_width=1280 # recommend 1024 for 7" touch screen
@@ -237,7 +237,7 @@ network={
     psk="NETWORK-PASSWORD"
 }
 </pre>
-<p>edit the hostname by editing the file <code>rootfs/etc/hostname</code>:</p>
+<p>edit the hostname by editing the file <code>rootfs/etc/hostname</code> and <code>rootfs/etc/hosts</code></p>
 <p>eject the SD card</p>
 <p>insert the SD card to Raspberry Pi and boot it up.</p>
 <p>identify the IP address of the Raspberry, then ssh to the Raspberry with username pi and password raspberry</p>
@@ -827,6 +827,8 @@ deb-src http://deb.debian.org/debian/ bullseye-updates main
 
 
 <h3>Setup Client on Server side</h3>
+<p>move to the directory where init-pki was called:</p>
+<p><code>cd /etc/openvpn </code></p>
 <p>create a new pair of Client Private Key and Client Certificate on the VPN server:</p>
 <p><code>sudo /usr/share/easy-rsa/easyrsa gen-req client_hostname nopass</code></p>
 <p><code>sudo /usr/share/easy-rsa/easyrsa sign-req client client_hostname</code></p>
@@ -980,6 +982,180 @@ verb 4
 <li>/etc/openvpn/client.conf</li>
 </ol>
 <p>if in android client machine, copy all the files to device, install the <code>OpenVPN connect</code> app and then import the .ovpn profile file.</p>
+<p>To simplify installation, a single inline client.ovpn file can be used, where ca, cert, key, tls-auth corresponds to contents of ca.crt, client_hostname.crt, client_hostname.key, and ta.key accordingly:</p>
+<details>
+<pre>
+##############################################
+# Sample client-side OpenVPN 2.0 config file #
+# for connecting to multi-client server.     #
+#                                            #
+# This configuration can be used by multiple #
+# clients, however each client should have   #
+# its own cert and key files.                #
+#                                            #
+# On Windows, you might want to rename this  #
+# file so it has a .ovpn extension           #
+##############################################
+
+# Specify that we are a client and that we
+# will be pulling certain config file directives
+# from the server.
+client
+
+# Use the same setting as you are using on
+# the server.
+# On most systems, the VPN will not function
+# unless you partially or fully disable
+# the firewall for the TUN/TAP interface.
+;dev tap
+dev tun
+
+# Windows needs the TAP-Win32 adapter name
+# from the Network Connections panel
+# if you have more than one.  On XP SP2,
+# you may need to disable the firewall
+# for the TAP adapter.
+;dev-node MyTap
+
+# Are we connecting to a TCP or
+# UDP server?  Use the same setting as
+# on the server.
+#;proto tcp
+proto udp
+
+# The hostname/IP and port of the server.
+# You can have multiple remote entries
+# to load balance between the servers.
+remote 1.2.3.4 56789
+#;remote my-server-2 1194
+
+# Choose a random host from the remote
+# list for load-balancing.  Otherwise
+# try hosts in the order specified.
+;remote-random
+
+# Keep trying indefinitely to resolve the
+# host name of the OpenVPN server.  Very useful
+# on machines which are not permanently connected
+# to the internet such as laptops.
+resolv-retry infinite
+
+# Most clients don't need to bind to
+# a specific local port number.
+nobind
+
+# Downgrade privileges after initialization (non-Windows only)
+;user nobody
+;group nogroup
+
+# The keepalive directive causes ping-like
+# messages to be sent back and forth over
+# the link so that each side knows when
+# the other side has gone down.
+# Ping every 10 seconds, assume that remote
+# peer is down if no ping received during
+# a 120 second time period.
+keepalive 10 120
+
+# Try to preserve some state across restarts.
+persist-key
+persist-tun
+
+# If you are connecting through an
+# HTTP proxy to reach the actual OpenVPN
+# server, put the proxy server/IP and
+# port number here.  See the man page
+# if your proxy server requires
+# authentication.
+;http-proxy-retry # retry on connection failures
+;http-proxy [proxy server] [proxy port #]
+
+# Wireless networks often produce a lot
+# of duplicate packets.  Set this flag
+# to silence duplicate packet warnings.
+;mute-replay-warnings
+
+# SSL/TLS parms.
+# See the server config file for more
+# description.  It's best to use
+# a separate .crt/.key file pair
+# for each client.  A single ca
+# file can be used for all clients.
+;ca /etc/openvpn/pki/ca.crt
+;cert /etc/openvpn/pki/issued/minidebian.crt
+;key /etc/openvpn/pki/private/minidebian.key
+&lt;ca&gt;
+-----BEGIN CERTIFICATE-----
+MIIDSzCCAjOgAwIBAgIUPtMIAN3dfG9Z/ywPgpDK62+qkdkwDQYJKoZIhvcNAQEL
+....
+gsQ8ilUCogIPg+8MTbw0QpjabOCw+Srs67kGWseJhQ==
+-----END CERTIFICATE-----
+&lt;/ca&gt;
+
+&lt;cert&gt;
+Certificate:
+    ...
+    Signature Algorithm: sha256WithRSAEncryption
+         ...
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+&lt;/cert&gt;
+
+&lt;key&gt;
+-----BEGIN PRIVATE KEY-----
+...
+-----END PRIVATE KEY-----
+&lt;/key&gt;
+
+# Verify server certificate by checking that the
+# certificate has the correct key usage set.
+# This is an important precaution to protect against
+# a potential attack discussed here:
+#  http://openvpn.net/howto.html#mitm
+#
+# To use this feature, you will need to generate
+# your server certificates with the keyUsage set to
+#   digitalSignature, keyEncipherment
+# and the extendedKeyUsage to
+#   serverAuth
+# EasyRSA can do this for you.
+remote-cert-tls server
+
+# If a tls-auth key is used on the server
+# then every client must also have the key.
+;tls-auth /etc/openvpn/ta.key 1
+key-direction 1
+&lt;tls-auth&gt;
+#
+# 2048 bit OpenVPN static key
+#
+-----BEGIN OpenVPN Static key V1-----
+...
+-----END OpenVPN Static key V1-----
+&lt;/tls-auth&gt;
+
+# Select a cryptographic cipher.
+# If the cipher option is used on the server
+# then you must also specify it here.
+# Note that v2.4 client/server will automatically
+# negotiate AES-256-GCM in TLS mode.
+# See also the data-ciphers option in the manpage
+cipher AES-256-CBC
+
+# Enable compression on the VPN link.
+# Don't enable this unless it is also
+# enabled in the server config file.
+#comp-lzo
+
+# Set log file verbosity.
+verb 4
+
+# Silence repeating messages
+;mute 20
+
+</pre>
+</details>
 
 <h2>Setup OTG(On-The-Go)/Gadget Mode Usb WebCam</h2>
 <p>In the gadget mode we set up ethernet interface via USB on a Raspberry Pi Zero. So the Pi Zero can stream video from WebCam through USB via GStreamer library.</p>
