@@ -1358,6 +1358,11 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <code>python3 -m venv ~/.local</code>
 <code>~/.local/bin/pip3 install python3_package_name</code>
 
+
+<h3>Network Setup</h3>
+<h4>Changing Route Metric via <code>nmcli</code> </h4>
+<code>sudo nmcli connection modify Ethernet_Client_Name ipv4.route-metric 999</code>
+
 </div>
 </body>
 </html>
