@@ -1362,6 +1362,25 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <h3>Network Setup</h3>
 <h4>Changing Route Metric via <code>nmcli</code> </h4>
 <code>sudo nmcli connection modify Ethernet_Client_Name ipv4.route-metric 999</code>
+<h4>Reload WIFI driver</h4>
+<p>Sometimes the WIFI hardware glitches out and does not work anymore. An alternative to rebooting the device is by reloading the kernel driver.</p>
+<ol>
+    <li>Suppose the Network Device is called <code>wlo1</code>.</li>
+    <li>Check the kernel driver using: <code>ls -l /sys/class/net/wlo1/device/driver</code>. For example it shows <code>/sys/class/net/wlo1/device/driver -> ../../../../bus/pci/drivers/mt7921e</code></li>
+    <li>run <code>sudo modprobe -r mt7921e</code> to unload the module</li>
+    <li>run <code>sudo modprobe mt7921e</code> to reload the module</li>
+</ol>
+
+
+<h3>Docker</h3>
+<h4>Dumping an image</h4>
+<code>sudo docker image save target_image:dev | gzip > ./tmp/image.tar.gz</code>
+<h4>Importing an image</h4>
+<code>sudo docker image load -i ./tmp/image.tar.gz</code>
+<h4>Run an image in foreground</h4>
+<code>sudo docker run --interactive --tty --user ubuntu -p 2222:22 -p 8080:8880 target_image:dev</code>
+<h4>Commit an image</h4>
+<code>sudo docker commit $image_id $image_name_alias </code>
 
 </div>
 </body>
