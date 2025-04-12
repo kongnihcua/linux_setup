@@ -1382,6 +1382,9 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <h4>Commit an image</h4>
 <code>sudo docker commit $image_id $image_name_alias </code>
 
+<h3>Backup Folder using Rsync</h3>
+<code>rsync --progress --no-inc-recursive --archive /mnt/hdd_01/project_data /mnt/hdd_02/project_data</code>
+
 </div>
 </body>
 </html>
