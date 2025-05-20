@@ -1389,6 +1389,11 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <h3>Backup Folder using Rsync</h3>
 <code>rsync --progress --no-inc-recursive --archive /mnt/hdd_01/project_data /mnt/hdd_02/project_data</code>
 
+
+<h3>IP forwarding in Docker</h3>
+<p>Docker alters the IP table configuration. To re-enable IPv4 packet forwarding:</p>
+<code>sudo iptables -P FORWARD ACCEPT</code>
+
 </div>
 </body>
 </html>
