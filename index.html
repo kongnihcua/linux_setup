@@ -1364,6 +1364,7 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <code>nmcli -f autoconnect-priority,name c</code>
 <h4>Changing Route Metric via <code>nmcli</code> </h4>
 <code>sudo nmcli connection modify Ethernet_Client_Name ipv4.route-metric 999</code>
+<code>sudo nmcli connection up Ethernet_Client_Name</code>
 <h4>Reload WIFI driver</h4>
 <p>Sometimes the WIFI hardware glitches out and does not work anymore. An alternative to rebooting the device is by reloading the kernel driver.</p>
 <ol>
