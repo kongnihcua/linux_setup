@@ -1359,7 +1359,7 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <code>~/.local/bin/pip3 install python3_package_name</code>
 
 
-<h3>Network Setup</h3>
+<h2>Network Setup</h2>
 <h4>Checking Connection Priority</h4>
 <code>nmcli -f autoconnect-priority,name c</code>
 <h4>Changing Route Metric via <code>nmcli</code> </h4>
@@ -1376,7 +1376,136 @@ UUID=11111111-2222-3333-4444-555555555555 /usr/local  ext4 defaults,nofail   0  
 <code>sudo journalctl -fu NetworkManager</code>
 
 
-<h3>Docker</h3>
+<h2>WWAN/ModemManager Debugging Toolbox</h2>
+<p>A compact set of commands to diagnose and bring up WWAN data connections on Linux with ModemManager and NetworkManager.</p>
+
+<h3>Install tools</h3>
+<pre><code># Debian/Ubuntu
+sudo apt update
+sudo apt install modemmanager libmbim-utils libqmi-utils
+</code></pre>
+
+<h3>Service and radio state</h3>
+<pre><code>sudo systemctl restart ModemManager NetworkManager
+nmcli general status
+nmcli radio wwan on
+rfkill list
+sudo rfkill unblock wwan
+</code></pre>
+
+<h3>Detect modem and SIM</h3>
+<pre><code>mmcli -L
+mmcli -m 0
+# If a SIM object exists (e.g., /SIM/0), show details:
+mmcli -i 0
+</code></pre>
+
+<h3>SIM slots and eSIM</h3>
+<pre><code># Dual-SIM/eSIM status (MBIM)
+mbimcli -d /dev/cdc-wdm0 -p --query-slot-info-status
+
+# Set physical SIM (slot 1) as primary if needed
+sudo mmcli -m 0 --set-primary-sim-slot=1
+sudo mmcli -m 0 --reset
+
+# eSIM management (if supported)
+mmcli --help-esim
+mmcli -m 0 --list-esims
+# Add/enable profile (example)
+# sudo mmcli -m 0 --esim=0 --add-profile=activation-code='LPA:1$SM-DP+ADDRESS$CODE'
+# sudo mmcli -m 0 --esim=0 --enable-profile=&lt;ICCID&gt;
+</code></pre>
+
+<h3>Registration and signal</h3>
+<pre><code>mmcli -m 0 | egrep 'state|registration|operator|access|signal'
+mbimcli -d /dev/cdc-wdm0 -p --query-registration-state
+</code></pre>
+
+<h3>Connect and disconnect via ModemManager</h3>
+<pre><code># Connect (edit APN as needed)
+sudo mmcli -m 0 --enable
+sudo mmcli -m 0 --simple-connect="apn=internet.telekom,ip-type=ipv4,allow-roaming=yes"
+mmcli -m 0 --list-bearers
+# Inspect bearer
+mmcli -b &lt;BEARER_ID&gt;
+# Disconnect
+sudo mmcli -m 0 --simple-disconnect
+</code></pre>
+
+<h3>MBIM low-level checks (bypass NetworkManager/ModemManager)</h3>
+<p>If ModemManager is running, add <code>-p</code> to share the port; or stop it temporarily.</p>
+<pre><code># Subscriber/SIM readiness
+mbimcli -d /dev/cdc-wdm0 -p --query-subscriber-ready-status
+
+# Connect (some mbimcli versions prefer 'access-string' over 'apn')
+sudo mbimcli -d /dev/cdc-wdm0 --connect="access-string=internet.telekom,ip-type=ipv4" -v
+
+# Query IP configuration (session 0)
+mbimcli -d /dev/cdc-wdm0 --query-ip-configuration=0
+
+# Packet service state
+mbimcli -d /dev/cdc-wdm0 --query-packet-service-state
+</code></pre>
+
+<h3>NetworkManager profile creation and activation</h3>
+<pre><code># See devices (look for wwan0 or similar)
+nmcli device status
+
+# Create a clean IPv4-only profile (no auth)
+sudo nmcli con delete wwan || true
+sudo nmcli con add type gsm ifname "*" con-name wwan apn "internet.telekom"
+sudo nmcli con mod wwan ipv6.method ignore
+
+# Bring it up
+sudo nmcli -w 30 con up wwan
+
+# Inspect profile
+nmcli -p con show wwan
+</code></pre>
+
+<h3>Interfaces and drivers</h3>
+<pre><code># Control/MBIM character device
+ls -l /dev/cdc-wdm*
+
+# Network interfaces
+ip link show
+ls -l /sys/class/net
+
+# Drivers loaded
+lsmod | egrep 'cdc_mbim|cdc_ncm|qmi_wwan|mhi_wwan_mbim'
+
+# Kernel logs for WWAN
+dmesg | egrep -i 'mbim|wwan|cdc-wdm|mhi'
+</code></pre>
+
+<h3>Logs</h3>
+<pre><code>journalctl -u ModemManager -b -n 200 --no-pager
+journalctl -u NetworkManager -b -n 200 --no-pager
+</code></pre>
+
+<h3>Manual IP setup after MBIM connect (quick end-to-end test)</h3>
+<p>Use the values returned by <code>mbimcli --query-ip-configuration</code>.</p>
+<pre><code># Identify the data interface (likely wwan0)
+ip link show | egrep -i 'wwan|cdc-wdm'
+
+# Apply IP details
+sudo ip link set wwan0 up
+sudo ip addr flush dev wwan0
+sudo ip addr add 10.156.23.234/30 dev wwan0
+sudo ip route replace default via 10.156.23.233 dev wwan0 metric 100
+
+# Temporary DNS (systemd-resolved)
+sudo resolvectl dns wwan0 10.74.210.210 10.74.210.211
+sudo resolvectl domain wwan0 "~."
+</code></pre>
+
+<h3>QMI-only note</h3>
+<p>Use QMI tools only if the device is in QMI mode. If you see “requested QMI mode but unexpected transport type,” the modem is in MBIM mode—use <code>mbimcli</code> instead.</p>
+<pre><code># QMI card status (QMI mode devices)
+sudo qmicli -d /dev/cdc-wdm0 --device-open-qmi -p --uim-get-card-status
+</code></pre>
+
+<h2>Docker</h2>
 <h4>Dumping an image</h4>
 <code>sudo docker image save target_image:dev | gzip > ./tmp/image.tar.gz</code>
 <h4>Importing an image</h4>
