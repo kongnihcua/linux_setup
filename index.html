@@ -1864,6 +1864,26 @@ done
 </pre>
 </code>
 
+<h3>Extend Linux Swap Area</h3>
+<code>
+<pre>
+#!/usr/bin/env bash
+
+# Create /swap_file as 32 GiB if it does not exist; otherwise do nothing.
+
+test -e /swap_file && exit 0
+
+sudo touch /swap_file
+sudo dd if=/dev/zero of=/swap_file bs=1G count=32 status=progress
+sudo chmod 600 /swap_file
+sudo mkswap /swap_file
+sudo swapon /swap_file
+echo '/swap_file none swap sw 0 0' | sudo tee --append /etc/fstab
+</pre>
+
+
+</code>
+
 </div>
 </body>
 </html>
