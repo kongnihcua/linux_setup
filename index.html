@@ -1884,6 +1884,18 @@ echo '/swap_file none swap sw 0 0' | sudo tee --append /etc/fstab
 
 </code>
 
+
+<h3>Setup RAID 1</h3>
+
+<p>Multiple Devices Administration (MDADM) is a linux layer that implements RAID (Redundant Array of Inexpensive Devices). XFS is used to improve concurrent write and read efficiency.</p>
+<code>sudo apt install mdadm xfsprogs</code>
+
+<p>Partition is not needed in our case:</p>
+<code>sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 --metadata=1.2 --bitmap=internal /dev/sdc /dev/sdd</code>
+<code>sudo mkfs.xfs -L dualhawk /dev/md0 # -L for label</code>
+<code>sudo mkdir /mnt/dualhawk</code>
+<code>sudo mount /dev/md0 /mnt/dualhawk/</code>
+
 </div>
 </body>
 </html>
