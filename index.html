@@ -1830,6 +1830,55 @@ sudo resolvectl domain wwan0 "~."
 sudo qmicli -d /dev/cdc-wdm0 --device-open-qmi -p --uim-get-card-status
 </code></pre>
 
+<h2>Raspberry sample Nmcli connection profile</h2>
+<p>sudo nano /etc/NetworkManager/system-connections/$SSID.nmconnection</p>
+<p>
+<code>
+<pre>
+[connection]
+id=CMLplayground
+type=wifi
+interface-name=wlan0
+autoconnect=true
+autoconnect-priority=100
+
+[wifi]
+mode=infrastructure
+ssid=$SSID
+band=bg
+cloned-mac-address=permanent
+
+[wifi-security]
+auth-alg=open
+key-mgmt=wpa-psk
+proto=rsn
+pairwise=ccmp
+group=ccmp
+pmf=2
+psk=$PASSWORD
+psk-flags=0
+
+[ipv4]
+method=auto
+
+[ipv6]
+addr-gen-mode=default
+method=disabled
+
+[proxy]
+</pre>
+</code>
+</p>
+
+<h3>NMCLI commands</h3>
+<p>use single quote for ssid or password to escape special characters</p>
+<p><code>sudo nmcli connection show</code></p>
+<p><code>sudo nmcli connection delete $SSID</code></p>
+<p><code>sudo nmcli device wifi connect $SSID</code></p> 
+<p><code>sudo nmcli device wifi connect $SSID --ask</code></p> 
+<p><code>sudo nmcli connection up $SSID</code></p>
+
+
 <h2>Docker</h2>
 <h4>Dumping an image</h4>
 <code>sudo docker image save target_image:dev | gzip > ./tmp/image.tar.gz</code>
