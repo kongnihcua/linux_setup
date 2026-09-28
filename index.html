@@ -112,6 +112,60 @@ const load = _ => {
 <p>store your credentials for push/pull without authentication:</p>
 <code>git config credential.helper store</code>
 
+<h4>Setup Git Server through ssh</h4>
+<pre><code>
+# on client: find folders to backup
+find . -name ".git" -type d -exec dirname {} \; | xargs -n1 basename
+
+# paste the output to server
+while read projectname; do
+  mkdir -p "$HOME/workspace/$projectname.git" && cd "$HOME/workspace/$projectname.git" && git init --bare
+done <<EOF
+project1_name
+project2_name
+project3_name
+project4_name
+project5_name
+EOF
+
+# server: disable force push
+for repo in "$HOME"/workspace/*.git/; do
+  echo ">> $(basename "$repo")"
+  git --git-dir="$repo" config receive.denyNonFastForwards true
+done
+
+
+# push backup from client
+find . -name ".git" -type d -exec dirname {} \; | while read projectdir; do
+  projectname=$(basename "$projectdir")
+  echo ">> $projectname"
+  if (cd "$projectdir" && git remote | grep -q "^backup$"); then
+    echo "   remote exists, fetching"
+    (cd "$projectdir" && git fetch backup)
+  else
+    echo "   adding remote + fetch"
+    (cd "$projectdir" && git remote add backup "username@server_domain_name_or_ip:/home/username/workspace/$projectname" && git push backup "refs/remotes/origin/*:refs/heads/*")
+  fi
+done
+
+
+# pull on client
+
+find . -name ".git" -type d -exec dirname {} \; | while read projectdir; do
+  projectname=$(basename "$projectdir")
+  echo ">> $projectname"
+  if (cd "$projectdir" && git remote | grep -q "^backup$"); then
+    echo "   remote exists, fetching"
+    (cd "$projectdir" && git fetch backup)
+  else
+    echo "   adding remote + fetch"
+    (cd "$projectdir" && git remote add backup "username@server_domain_name_or_ip:/home/username/workspace/$projectname" && git fetch backup)
+  fi
+done
+
+</code></pre>
+
+
 <h2>Setup PostgresSQL</h2>
 Environment: Ubuntu Focal
 <h3>install dependencies</h3>
